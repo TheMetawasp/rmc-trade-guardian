@@ -1,0 +1,1720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RMC FundedNext Trade Guardian</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #f5f5f5;
+  color: #1a1a1a;
+  line-height: 1.6;
+}
+.container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+h1, h2, h3 { font-family: 'Cormorant Garamond', serif; color: #0A1F44; }
+h1 { font-size: 2.2rem; margin-bottom: 0.5rem; font-weight: 700; }
+h2 { font-size: 1.6rem; margin: 1.5rem 0 1rem; font-weight: 600; }
+h3 { font-size: 1.2rem; margin: 1rem 0 0.5rem; font-weight: 600; }
+
+.header {
+  background: linear-gradient(135deg, #0A1F44 0%, #163a6d 100%);
+  color: white;
+  padding: 1.5rem 0;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+.header h1 { color: white; margin: 0; }
+.header .subtitle { color: #D4AF37; font-size: 0.95rem; opacity: 0.95; }
+
+.phase-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  margin-left: 10px;
+}
+.badge-challenge { background: #D4AF37; color: #0A1F44; }
+.badge-funded { background: #27ae60; color: white; }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin: 20px 0; }
+.card {
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  border: 1px solid #e0e0e0;
+}
+.card h3 { margin-top: 0; color: #0A1F44; }
+
+.stat-card {
+  background: white;
+  border-radius: 8px;
+  padding: 1.2rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  border-left: 4px solid #D4AF37;
+}
+.stat-label { font-size: 0.85rem; color: #666; text-transform: uppercase; letter-spacing: 0.5px; }
+.stat-value { font-size: 2rem; font-weight: 700; color: #0A1F44; margin: 0.3rem 0; }
+.stat-sub { font-size: 0.85rem; color: #999; }
+
+.alert {
+  padding: 1rem 1.2rem;
+  border-radius: 6px;
+  margin: 1rem 0;
+  border-left: 4px solid;
+  font-weight: 500;
+}
+.alert-danger { background: #ffe6e6; color: #c0392b; border-color: #c0392b; }
+.alert-warning { background: #fff4e6; color: #e67e22; border-color: #e67e22; }
+.alert-success { background: #e8f5e9; color: #27ae60; border-color: #27ae60; }
+.alert-info { background: #e3f2fd; color: #2980b9; border-color: #2980b9; }
+
+.progress-bar {
+  width: 100%;
+  height: 30px;
+  background: #e0e0e0;
+  border-radius: 15px;
+  overflow: hidden;
+  position: relative;
+  margin: 0.5rem 0;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #D4AF37 0%, #f0c850 100%);
+  transition: width 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0A1F44;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+input, select, textarea, button {
+  font-family: inherit;
+  font-size: 0.95rem;
+  padding: 0.6rem 0.9rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%;
+  margin: 0.3rem 0;
+}
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: #D4AF37;
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+}
+button {
+  background: #D4AF37;
+  color: #0A1F44;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+button:hover { background: #c29b2f; transform: translateY(-1px); }
+button:active { transform: translateY(0); }
+button.btn-secondary { background: #0A1F44; color: white; }
+button.btn-secondary:hover { background: #163a6d; }
+button.btn-danger { background: #c0392b; color: white; }
+button.btn-danger:hover { background: #a02d23; }
+
+.checklist { list-style: none; }
+.checklist li {
+  padding: 0.7rem;
+  margin: 0.4rem 0;
+  background: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.checklist li:hover { background: #f0f0f0; }
+.checklist li.checked { background: #e8f5e9; border-color: #27ae60; opacity: 0.7; }
+.checkbox {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #ccc;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.checklist li.checked .checkbox { background: #27ae60; border-color: #27ae60; color: white; }
+
+.journal-entry {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 1rem;
+  margin: 0.6rem 0;
+}
+.journal-entry .date { font-size: 0.85rem; color: #999; font-weight: 600; }
+.journal-entry .instrument { display: inline-block; padding: 2px 8px; background: #0A1F44; color: white; border-radius: 3px; font-size: 0.8rem; margin: 0.3rem 0; }
+.journal-entry .pnl { font-size: 1.3rem; font-weight: 700; margin: 0.3rem 0; }
+.journal-entry .pnl.profit { color: #27ae60; }
+.journal-entry .pnl.loss { color: #c0392b; }
+.journal-entry .notes { font-size: 0.9rem; color: #666; margin: 0.3rem 0; }
+.journal-entry .actions { margin-top: 0.5rem; display: flex; gap: 8px; }
+.journal-entry .actions button { width: auto; padding: 0.4rem 0.8rem; font-size: 0.85rem; }
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin: 1.5rem 0 1rem;
+  border-bottom: 2px solid #e0e0e0;
+  flex-wrap: wrap;
+}
+.tab {
+  padding: 0.6rem 1.2rem;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: #666;
+  font-weight: 500;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s;
+  width: auto;
+  margin: 0;
+}
+.tab:hover { color: #0A1F44; background: #f5f5f5; }
+.tab.active { color: #0A1F44; border-bottom-color: #D4AF37; background: none; }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+.footer {
+  background: #0A1F44;
+  color: white;
+  padding: 1rem;
+  text-align: center;
+  margin-top: 3rem;
+  font-size: 0.9rem;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+.modal.show { display: flex; }
+.modal-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.confetti {
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  background: #D4AF37;
+  position: absolute;
+  animation: confetti-fall 3s linear;
+}
+@keyframes confetti-fall {
+  to { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+}
+
+.inline-form { display: flex; gap: 10px; align-items: flex-start; flex-wrap: wrap; }
+.inline-form input, .inline-form select { flex: 1; min-width: 120px; }
+.inline-form button { width: auto; flex-shrink: 0; }
+
+.rule-card {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 1rem;
+  margin: 0.6rem 0;
+  border-left: 4px solid #D4AF37;
+}
+.rule-card h4 { color: #0A1F44; margin: 0 0 0.5rem; font-size: 1rem; }
+.rule-card p { font-size: 0.9rem; color: #666; margin: 0; }
+.rule-status { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 0.8rem; font-weight: 600; margin-left: 8px; }
+.rule-status.compliant { background: #e8f5e9; color: #27ae60; }
+.rule-status.warning { background: #fff4e6; color: #e67e22; }
+.rule-status.breached { background: #ffe6e6; color: #c0392b; }
+
+.calendar-cell {
+  aspect-ratio: 1;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: white;
+  min-height: 80px;
+}
+.calendar-cell:hover { background: #f9f9f9; transform: translateY(-2px); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+.calendar-cell.header {
+  background: #0A1F44;
+  color: white;
+  font-weight: 600;
+  cursor: default;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.85rem;
+  min-height: 40px;
+}
+.calendar-cell.header:hover { background: #0A1F44; transform: none; box-shadow: none; }
+.calendar-cell.empty { background: #f5f5f5; cursor: default; border: 1px solid #f0f0f0; }
+.calendar-cell.empty:hover { background: #f5f5f5; transform: none; box-shadow: none; }
+.calendar-cell.profit { background: #e8f5e9; border-left: 4px solid #27ae60; }
+.calendar-cell.loss { background: #ffebee; border-left: 4px solid #c0392b; }
+.calendar-cell.no-trade { background: #f5f5f5; border: 1px solid #e0e0e0; }
+.calendar-cell.today { border: 2px solid #D4AF37; }
+.calendar-cell.today.profit { background: #e8f5e9; }
+.calendar-cell.today.loss { background: #ffebee; }
+.calendar-cell.today.no-trade { background: #fffbf0; }
+.calendar-date { font-size: 1.1rem; font-weight: 600; color: #0A1F44; }
+.calendar-pnl { font-size: 0.9rem; font-weight: 700; margin-top: 0.3rem; }
+.calendar-pnl.profit { color: #27ae60; }
+.calendar-pnl.loss { color: #c0392b; }
+.calendar-trades { font-size: 0.75rem; color: #999; margin-top: 0.2rem; }
+
+@media (max-width: 768px) {
+  .grid { grid-template-columns: 1fr; }
+  h1 { font-size: 1.8rem; }
+  .inline-form { flex-direction: column; }
+  .inline-form input, .inline-form button { width: 100%; }
+  .calendar-cell { min-height: 60px; padding: 0.3rem; }
+  .calendar-date { font-size: 0.9rem; }
+  .calendar-pnl { font-size: 0.75rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="container">
+    <h1>RMC FundedNext Trade Guardian <span class="phase-badge" id="phase-badge">CHALLENGE</span></h1>
+    <p class="subtitle" id="header-subtitle">Stellar 1-Step • $6,000 Account • Protecting you from breaches</p>
+  </div>
+</div>
+
+<div class="container">
+
+  <div id="stop-banner" class="alert alert-danger" style="display:none; font-size: 1.1rem; text-align: center;">
+    ⚠️ <strong>STOP TRADING NOW</strong> — You are approaching a breach threshold. Close your platform immediately.
+  </div>
+
+  <div class="card" style="margin-bottom: 1.5rem;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:1rem">
+      <div style="flex:1;min-width:200px">
+        <label style="font-size:0.85rem;color:#666;text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:0.3rem">Trading Phase</label>
+        <select id="phase-selector" onchange="manualPhaseChange()" style="width:100%;font-weight:600;font-size:1rem;color:#0A1F44;border:2px solid #D4AF37">
+          <option value="challenge">Challenge Mode</option>
+          <option value="funded">Funded Mode</option>
+        </select>
+      </div>
+      <div style="flex:1;min-width:200px">
+        <div style="font-size:0.85rem;color:#666;text-transform:uppercase;letter-spacing:0.5px;">Total P&L (All Time)</div>
+        <div style="font-size:2rem;font-weight:700;margin:0.3rem 0;" id="total-pnl-header">$0.00</div>
+      </div>
+      <div style="flex:1;min-width:200px">
+        <div style="font-size:0.85rem;color:#666;text-transform:uppercase;letter-spacing:0.5px;">Safe Daily Loss Used</div>
+        <div style="font-size:2rem;font-weight:700;margin:0.3rem 0;" id="daily-loss-header">$0 / $180</div>
+      </div>
+      <div style="flex:1;min-width:200px">
+        <div style="font-size:0.85rem;color:#666;text-transform:uppercase;letter-spacing:0.5px;">Maximum Loss Buffer</div>
+        <div style="font-size:2rem;font-weight:700;margin:0.3rem 0;" id="max-loss-header">$360</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('dashboard')">Dashboard</button>
+    <button class="tab" onclick="switchTab('calendar')">Calendar History</button>
+    <button class="tab" onclick="switchTab('journal')">Daily Journal</button>
+    <button class="tab" onclick="switchTab('calculator')">Lot Calculator</button>
+    <button class="tab" onclick="switchTab('checklist')">Pre-Trade Checklist</button>
+    <button class="tab" onclick="switchTab('rules')">Rules Reference</button>
+    <button class="tab" onclick="switchTab('payout')" id="payout-tab" style="display:none">Payout Planner</button>
+    <button class="tab" onclick="switchTab('stats')">Statistics</button>
+    <button class="tab" onclick="switchTab('settings')">Settings</button>
+  </div>
+
+  <div id="tab-dashboard" class="tab-content active">
+    <h2>Account Dashboard</h2>
+    
+    <div class="grid">
+      <div class="stat-card">
+        <div class="stat-label">Account Balance</div>
+        <div class="stat-value">$<span id="balance">6000</span></div>
+        <div class="stat-sub">
+          <input type="number" id="balance-input" placeholder="Update balance" style="width:120px;display:inline-block;margin-right:5px">
+          <button onclick="updateBalance()" style="width:auto;padding:0.4rem 0.8rem;font-size:0.85rem">Update</button>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-label">Distance to Floor ($5,640)</div>
+        <div class="stat-value" id="floor-distance" style="color:#27ae60">$360</div>
+        <div class="stat-sub" id="floor-status">Safe cushion</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-label">Today's P&L</div>
+        <div class="stat-value" id="today-pnl">$0</div>
+        <div class="stat-sub">Daily limit: $180 remaining</div>
+      </div>
+
+      <div class="stat-card" id="challenge-progress-card">
+        <div class="stat-label">Challenge Progress</div>
+        <div class="stat-value" id="challenge-profit">$0</div>
+        <div class="stat-sub">of $600 target (10%)</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Log Today's Trade Result</h3>
+      <div class="inline-form">
+        <input type="number" id="quick-pnl" placeholder="Enter P&L ($)" step="0.01">
+        <button onclick="logQuickTrade()">Add to Today</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Yesterday's Performance Analysis</h3>
+      <p style="font-size:0.9rem;color:#666;margin-bottom:1rem">Enter yesterday's final P&L to get risk analysis for today's trading</p>
+      
+      <div class="inline-form">
+        <input type="number" id="yesterday-pnl" placeholder="Yesterday's P&L ($)" step="0.01">
+        <button onclick="analyzeYesterday()">Analyze</button>
+      </div>
+
+      <div id="yesterday-analysis" style="display:none;margin-top:1.5rem">
+        <div style="background:#f9f9f9;padding:1rem;border-radius:6px;margin-bottom:1rem">
+          <h4 style="margin:0 0 0.8rem;color:#0A1F44">Risk Assessment for Today</h4>
+          
+          <div class="grid" style="grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1rem">
+            <div style="background:white;padding:0.8rem;border-radius:4px;border-left:3px solid #D4AF37">
+              <div style="font-size:0.8rem;color:#666;margin-bottom:0.3rem">Max Safe Loss Today</div>
+              <div style="font-size:1.5rem;font-weight:700;color:#c0392b" id="analysis-daily-max">$0</div>
+              <div style="font-size:0.75rem;color:#999;margin-top:0.2rem">Daily limit after yesterday</div>
+            </div>
+            
+            <div style="background:white;padding:0.8rem;border-radius:4px;border-left:3px solid #D4AF37">
+              <div style="font-size:0.8rem;color:#666;margin-bottom:0.3rem">Total Buffer Remaining</div>
+              <div style="font-size:1.5rem;font-weight:700;" id="analysis-total-buffer">$0</div>
+              <div style="font-size:0.75rem;color:#999;margin-top:0.2rem">Until account floor breach</div>
+            </div>
+          </div>
+
+          <div id="analysis-alerts"></div>
+
+          <div style="margin-top:1rem;padding:0.8rem;background:white;border-radius:4px;border:1px solid #e0e0e0">
+            <h4 style="margin:0 0 0.5rem;color:#0A1F44;font-size:0.95rem">📊 Performance Insights</h4>
+            <div id="analysis-insights" style="font-size:0.85rem;color:#666;line-height:1.6"></div>
+          </div>
+
+          <div style="margin-top:1rem;padding:0.8rem;background:white;border-radius:4px;border:1px solid #e0e0e0">
+            <h4 style="margin:0 0 0.5rem;color:#0A1F44;font-size:0.95rem">💡 Trading Recommendations</h4>
+            <div id="analysis-recommendations" style="font-size:0.85rem;color:#666;line-height:1.6"></div>
+          </div>
+
+          <div style="margin-top:1rem;padding:0.8rem;background:white;border-radius:4px;border:1px solid #e0e0e0">
+            <h4 style="margin:0 0 0.5rem;color:#0A1F44;font-size:0.95rem">📈 Position Sizing Guide</h4>
+            <div id="analysis-position-sizing" style="font-size:0.85rem;color:#666;line-height:1.6"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" id="challenge-tracker" style="display:block">
+      <h3>Challenge Status</h3>
+      <div style="margin: 1rem 0">
+        <div style="display:flex;justify-content:space-between;margin-bottom:0.5rem">
+          <span>Profit target: <strong id="challenge-pct">0%</strong></span>
+          <span>Days traded: <strong id="days-traded">0</strong> of 2</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="challenge-progress-bar" style="width:0%">0%</div>
+        </div>
+      </div>
+      <button id="pass-challenge-btn" onclick="passChallengeModal()" style="display:none">🎉 Mark Challenge as Passed</button>
+    </div>
+
+    <div id="alerts-panel"></div>
+  </div>
+
+  <div id="tab-calendar" class="tab-content">
+    <h2>Calendar History</h2>
+    
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+        <button onclick="changeMonth(-1)" style="width:auto;padding:0.5rem 1rem">← Previous</button>
+        <h3 style="margin:0" id="calendar-month">January 2024</h3>
+        <button onclick="changeMonth(1)" style="width:auto;padding:0.5rem 1rem">Next →</button>
+      </div>
+      
+      <div id="calendar-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:8px"></div>
+    </div>
+
+    <div class="card">
+      <h3>Selected Date Details</h3>
+      <div id="calendar-details">
+        <p style="color:#999">Click on a date to see trading details</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-journal" class="tab-content">
+    <h2>Daily Journal</h2>
+    
+    <div class="card">
+      <h3>Add New Entry</h3>
+      <input type="date" id="entry-date" value="">
+      <select id="entry-instrument">
+        <option>XAUUSD</option>
+        <option>EURUSD</option>
+        <option>GBPUSD</option>
+        <option>USDJPY</option>
+        <option>US30</option>
+        <option>NAS100</option>
+        <option>Other</option>
+      </select>
+      <input type="number" id="entry-pnl" placeholder="P&L ($)" step="0.01">
+      <textarea id="entry-notes" placeholder="Notes (optional)" rows="2"></textarea>
+      <label><input type="checkbox" id="entry-news"> Trade during news event?</label>
+      <label id="entry-weekend-label" style="display:none"><input type="checkbox" id="entry-weekend"> Held over weekend?</label>
+      <button onclick="addJournalEntry()">Add Entry</button>
+    </div>
+
+    <div class="card">
+      <h3>Recent Entries (Last 14 Days)</h3>
+      <div id="journal-list"></div>
+    </div>
+  </div>
+
+  <div id="tab-calculator" class="tab-content">
+    <h2>Lot Size Calculator</h2>
+    
+    <div class="card">
+      <h3>Calculate Safe Lot Size</h3>
+      <select id="calc-instrument" onchange="updateCalcPrice()">
+        <option value="3300">XAUUSD (Gold)</option>
+        <option value="1.10">EURUSD</option>
+        <option value="1.27">GBPUSD</option>
+        <option value="149">USDJPY</option>
+        <option value="43000">US30</option>
+        <option value="19000">NAS100</option>
+      </select>
+      <label>Current Price: <input type="number" id="calc-price" value="3300" step="0.01"></label>
+      <label>Stop Loss Distance (points): <input type="number" id="calc-sl" value="150" step="1"></label>
+      <label>Existing Open Risk ($): <input type="number" id="calc-existing" value="0" step="1"></label>
+      <button onclick="calculateLots()">Calculate</button>
+
+      <div id="calc-results" style="margin-top:1.5rem;display:none">
+        <div class="grid">
+          <div class="stat-card">
+            <div class="stat-label">Available Risk Budget</div>
+            <div class="stat-value" id="calc-budget">$180</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Max Safe Lots</div>
+            <div class="stat-value" id="calc-lots" style="color:#27ae60">0.12</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Margin Required</div>
+            <div class="stat-value" id="calc-margin">$0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Margin % Used</div>
+            <div class="stat-value" id="calc-margin-pct">0%</div>
+          </div>
+        </div>
+        <div id="calc-alert"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-checklist" class="tab-content">
+    <h2>Pre-Trade Checklist</h2>
+    
+    <div class="card">
+      <h3>Complete Before Every Trade <span style="float:right;color:#999;font-size:0.9rem">Checked today: <strong id="checklist-count">0</strong></span></h3>
+      <ul class="checklist" id="checklist-items"></ul>
+      <button onclick="resetChecklist()" class="btn-secondary">Reset Checklist</button>
+    </div>
+  </div>
+
+  <div id="tab-rules" class="tab-content">
+    <h2>Rules Reference</h2>
+    <div id="rules-content"></div>
+  </div>
+
+  <div id="tab-payout" class="tab-content">
+    <h2>Payout Planner</h2>
+    
+    <div class="card">
+      <h3>Plan Your Withdrawal</h3>
+      <label>Withdrawal Amount ($): <input type="number" id="payout-amount" placeholder="Amount to withdraw" step="0.01"></label>
+      <button onclick="calculatePayout()">Calculate Net Payout</button>
+      <div id="payout-result" style="margin-top:1rem;display:none">
+        <p><strong>Withdrawal fee (3.5%):</strong> $<span id="payout-fee">0</span></p>
+        <p><strong>Net received:</strong> <span style="color:#27ae60;font-size:1.3rem;font-weight:700">$<span id="payout-net">0</span></span></p>
+        <div class="alert alert-warning" id="payout-warning" style="display:none">
+          ⚠️ You are withdrawing 100% of profits. This will reset your drawdown buffer to $6,000.
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Withdrawal History</h3>
+      <div class="inline-form">
+        <input type="date" id="withdrawal-date">
+        <input type="number" id="withdrawal-amount" placeholder="Amount">
+        <button onclick="addWithdrawal()">Log Withdrawal</button>
+      </div>
+      <div id="withdrawal-list" style="margin-top:1rem"></div>
+    </div>
+
+    <div class="alert alert-info">
+      💡 <strong>First withdrawal reminder:</strong> Don't forget to claim your $59.99 challenge fee refund (Reward Bonus) from your FundedNext dashboard.
+    </div>
+  </div>
+
+  <div id="tab-stats" class="tab-content">
+    <h2>Statistics</h2>
+    
+    <div class="grid">
+      <div class="stat-card">
+        <div class="stat-label">Total Trades</div>
+        <div class="stat-value" id="stats-total">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Win Rate</div>
+        <div class="stat-value" id="stats-winrate">0%</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Best Day</div>
+        <div class="stat-value" id="stats-best" style="color:#27ae60">$0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Worst Day</div>
+        <div class="stat-value" id="stats-worst" style="color:#c0392b">$0</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Trading Activity</h3>
+      <p>Days traded this week: <strong id="stats-week">0</strong></p>
+      <p>Days traded this month: <strong id="stats-month">0</strong></p>
+      <p>Average winning day: <strong style="color:#27ae60" id="stats-avg-win">$0</strong></p>
+      <p>Average losing day: <strong style="color:#c0392b" id="stats-avg-loss">$0</strong></p>
+    </div>
+  </div>
+
+  <div id="tab-settings" class="tab-content">
+    <h2>Settings</h2>
+    
+    <div class="card">
+      <h3>Data Management</h3>
+      <button onclick="exportData()" class="btn-secondary">Export Data (JSON)</button>
+      <button onclick="importDataPrompt()" class="btn-secondary" style="margin-top:0.5rem">Import Data (JSON)</button>
+      <button onclick="resetAllData()" class="btn-danger" style="margin-top:1rem">⚠️ Reset All Data</button>
+    </div>
+
+    <div class="card">
+      <h3>About This Account</h3>
+      <p><strong>Account Type:</strong> FundedNext Stellar 1-Step</p>
+      <p><strong>Starting Balance:</strong> $6,000</p>
+      <p><strong>Challenge Profit Target:</strong> 10% ($600)</p>
+      <p><strong>Min Trading Days (Challenge):</strong> 2 days</p>
+      <p><strong>Daily Loss Limit:</strong> 3% ($180)</p>
+      <p><strong>Max Overall Loss:</strong> 6% ($360) — floor at $5,640</p>
+      <p><strong>Leverage:</strong> 1:30 (Forex) | 1:5 (Commodities/Indices when funded)</p>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <div id="footer-text">Challenge Mode: Day 0 of trading, $600 remaining to target</div>
+</div>
+
+<div id="pass-modal" class="modal">
+  <div class="modal-content">
+    <h2 style="text-align:center;color:#27ae60">🎉 Congratulations!</h2>
+    <p style="text-align:center;font-size:1.1rem;margin:1rem 0">You have passed the Stellar 1-Step Challenge!</p>
+    <p style="text-align:center;color:#666">Your account will now switch to <strong>Funded Mode</strong>. New rules apply:</p>
+    <ul style="margin:1rem 0;line-height:2">
+      <li>3% open risk rule now active ($180 cap)</li>
+      <li>Weekend holding now BANNED</li>
+      <li>News trading: 40% profit rule</li>
+      <li>Payouts every 5 business days</li>
+    </ul>
+    <button onclick="confirmPassChallenge()">Switch to Funded Mode</button>
+    <button onclick="closeModal()" class="btn-secondary" style="margin-top:0.5rem">Cancel</button>
+  </div>
+</div>
+
+<script>
+let state = {
+  phase: 'challenge',
+  balance: 6000,
+  challengeProfit: 0,
+  daysTradedSet: new Set(),
+  todayPnL: 0,
+  todayDate: new Date().toISOString().split('T')[0],
+  journal: [],
+  checklist: [],
+  checklistDone: [],
+  withdrawals: [],
+  lastAlertCheck: Date.now(),
+  calendarMonth: new Date().getMonth(),
+  calendarYear: new Date().getFullYear(),
+  autoPassTriggered: false
+};
+
+const challengeChecklist = [
+  'Check economic calendar for high-impact news',
+  'Calculate lot size using calculator tab',
+  'Verify total open risk ≤ $180',
+  'Check daily loss remaining (stop at $90)',
+  'Check margin usage will stay under 40%',
+  'SL bracket order ready to attach at entry',
+  'Account floor safe (well above $5,640)',
+  'Not overleveraged (1:30 for forex, smaller for gold)',
+  'Have I already lost $90 today? If yes, sit out'
+];
+
+const fundedChecklist = [
+  'Check economic calendar for high-impact news in next 30 min',
+  'Calculate lot size using calculator tab',
+  'Verify total open risk ≤ $180 (3% rule)',
+  'Check daily loss remaining (soft stop at $90)',
+  'Check margin usage will stay under 40%',
+  'Not Friday after 4 PM GMT (weekend ban)',
+  'SL bracket order ready (3-min deadline)',
+  'Not in 5-min news window (40% profit rule)',
+  'Account floor safe (well above $5,640)'
+];
+
+async function loadState() {
+  try {
+    // Try window.storage first (Claude.ai persistent storage)
+    const stored = await window.storage.get('fundednext_state');
+    if (stored && stored.value) {
+      const loaded = JSON.parse(stored.value);
+      state = { ...state, ...loaded };
+      if (state.daysTradedSet && Array.isArray(state.daysTradedSet)) {
+        state.daysTradedSet = new Set(state.daysTradedSet);
+      }
+      state.todayDate = new Date().toISOString().split('T')[0];
+      state.todayPnL = 0;
+      console.log('State loaded from window.storage');
+    }
+  } catch (e) {
+    console.log('window.storage not available, trying localStorage');
+    
+    // Fallback to localStorage
+    try {
+      const localData = localStorage.getItem('rmc_fundednext_state');
+      if (localData) {
+        const loaded = JSON.parse(localData);
+        state = { ...state, ...loaded };
+        if (state.daysTradedSet && Array.isArray(state.daysTradedSet)) {
+          state.daysTradedSet = new Set(state.daysTradedSet);
+        }
+        state.todayDate = new Date().toISOString().split('T')[0];
+        state.todayPnL = 0;
+        console.log('State loaded from localStorage');
+      }
+    } catch (localErr) {
+      console.log('localStorage also unavailable, starting fresh');
+    }
+  }
+  updateUI();
+  updateRulesPanel();
+  populateChecklist();
+  renderJournal();
+  calculateStats();
+  checkAlerts();
+  updateHeaderStats();
+  renderCalendar();
+}
+
+function updateHeaderStats() {
+  const totalPnL = state.balance - 6000;
+  document.getElementById('total-pnl-header').textContent = (totalPnL >= 0 ? '+' : '') + '$' + totalPnL.toFixed(2);
+  document.getElementById('total-pnl-header').style.color = totalPnL >= 0 ? '#27ae60' : '#c0392b';
+
+  const todayTotal = state.journal.filter(e => e.date === state.todayDate).reduce((sum, e) => sum + e.pnl, 0);
+  const dailyLossUsed = Math.abs(Math.min(0, todayTotal));
+  document.getElementById('daily-loss-header').textContent = '$' + dailyLossUsed.toFixed(0) + ' / $180';
+  document.getElementById('daily-loss-header').style.color = dailyLossUsed >= 90 ? '#c0392b' : dailyLossUsed >= 60 ? '#e67e22' : '#27ae60';
+
+  const maxLossUsed = 6000 - state.balance;
+  const maxLossRemaining = 360 - maxLossUsed;
+  document.getElementById('max-loss-header').textContent = '$' + maxLossRemaining.toFixed(2);
+  document.getElementById('max-loss-header').style.color = maxLossRemaining < 50 ? '#c0392b' : maxLossRemaining < 150 ? '#e67e22' : '#27ae60';
+
+  // Update phase selector to match current state
+  document.getElementById('phase-selector').value = state.phase;
+}
+
+function manualPhaseChange() {
+  const selectedPhase = document.getElementById('phase-selector').value;
+  
+  if (selectedPhase === state.phase) {
+    return; // No change
+  }
+
+  // Confirmation dialog
+  const confirmMsg = selectedPhase === 'funded' 
+    ? '⚠️ Switch to Funded Mode?\n\nThis will activate funded account rules:\n• 3% open risk cap ($180 max across all positions)\n• Weekend holding BANNED\n• News trading: only 40% profit counts\n• Stop-loss required within 3 minutes\n• Payouts every 5 business days\n\nYour balance will remain as is.\n\nProceed?'
+    : '⚠️ Switch back to Challenge Mode?\n\nThis will revert to challenge rules:\n• Weekend holding ALLOWED\n• News trading ALLOWED (no profit reduction)\n• No 3% open risk cap\n• 10% profit target ($600)\n• Min 2 trading days required\n\nYour balance will remain as is.\n\nProceed?';
+
+  if (!confirm(confirmMsg)) {
+    // User cancelled, revert selector
+    document.getElementById('phase-selector').value = state.phase;
+    return;
+  }
+
+  // Switch phase
+  state.phase = selectedPhase;
+  state.checklistDone = []; // Reset checklist when switching
+  state.autoPassTriggered = false; // Reset auto-trigger
+
+  // Update all UI components
+  updateUI();
+  updateRulesPanel();
+  populateChecklist();
+  saveState();
+
+  // Show confirmation
+  const phaseLabel = selectedPhase === 'funded' ? 'Funded Mode' : 'Challenge Mode';
+  alert('✅ Switched to ' + phaseLabel + '!\n\nAll rules and analysis have been updated accordingly.\n\nReview the Rules Reference tab for details.');
+}
+
+async function saveState() {
+  const toSave = { ...state };
+  toSave.daysTradedSet = Array.from(state.daysTradedSet);
+  
+  // Try window.storage first
+  try {
+    await window.storage.set('fundednext_state', JSON.stringify(toSave));
+    console.log('State saved to window.storage');
+  } catch (e) {
+    console.log('window.storage unavailable, using localStorage');
+    
+    // Fallback to localStorage
+    try {
+      localStorage.setItem('rmc_fundednext_state', JSON.stringify(toSave));
+      console.log('State saved to localStorage');
+    } catch (localErr) {
+      console.error('Both storage methods failed');
+    }
+  }
+}
+
+function updateUI() {
+  document.getElementById('balance').textContent = state.balance.toFixed(2);
+  document.getElementById('phase-badge').textContent = state.phase.toUpperCase();
+  document.getElementById('phase-badge').className = state.phase === 'challenge' ? 'phase-badge badge-challenge' : 'phase-badge badge-funded';
+  
+  const floorDist = state.balance - 5640;
+  document.getElementById('floor-distance').textContent = '$' + floorDist.toFixed(2);
+  const floorEl = document.getElementById('floor-distance');
+  const floorStatusEl = document.getElementById('floor-status');
+  if (floorDist < 50) {
+    floorEl.style.color = '#c0392b';
+    floorStatusEl.textContent = '🚨 DANGER ZONE';
+  } else if (floorDist < 150) {
+    floorEl.style.color = '#e67e22';
+    floorStatusEl.textContent = '⚠️ Close to floor';
+  } else if (floorDist < 300) {
+    floorEl.style.color = '#f39c12';
+    floorStatusEl.textContent = 'Moderate cushion';
+  } else {
+    floorEl.style.color = '#27ae60';
+    floorStatusEl.textContent = 'Safe cushion';
+  }
+
+  const todayTotal = state.journal.filter(e => e.date === state.todayDate).reduce((sum, e) => sum + e.pnl, 0);
+  state.todayPnL = todayTotal;
+  document.getElementById('today-pnl').textContent = (todayTotal >= 0 ? '+' : '') + '$' + todayTotal.toFixed(2);
+  document.getElementById('today-pnl').style.color = todayTotal >= 0 ? '#27ae60' : '#c0392b';
+
+  if (state.phase === 'challenge') {
+    document.getElementById('challenge-progress-card').style.display = 'block';
+    document.getElementById('challenge-tracker').style.display = 'block';
+    document.getElementById('payout-tab').style.display = 'none';
+    document.getElementById('entry-weekend-label').style.display = 'none';
+    
+    const profit = state.balance - 6000;
+    state.challengeProfit = profit;
+    document.getElementById('challenge-profit').textContent = '$' + profit.toFixed(2);
+    const pct = (profit / 600) * 100;
+    document.getElementById('challenge-pct').textContent = pct.toFixed(1) + '%';
+    document.getElementById('challenge-progress-bar').style.width = Math.min(100, pct) + '%';
+    document.getElementById('challenge-progress-bar').textContent = Math.min(100, pct).toFixed(1) + '%';
+
+    const daysTraded = state.daysTradedSet.size;
+    document.getElementById('days-traded').textContent = daysTraded;
+
+    // Auto-trigger challenge pass when both conditions met
+    if (profit >= 600 && daysTraded >= 2 && !state.autoPassTriggered) {
+      state.autoPassTriggered = true;
+      setTimeout(() => {
+        passChallengeModal();
+      }, 500);
+    }
+
+    if (profit >= 600 && daysTraded >= 2) {
+      document.getElementById('pass-challenge-btn').style.display = 'block';
+    } else {
+      document.getElementById('pass-challenge-btn').style.display = 'none';
+    }
+
+    document.getElementById('footer-text').textContent = `Challenge Mode: Day ${daysTraded} of trading, $${Math.max(0, 600 - profit).toFixed(2)} remaining to target`;
+  } else {
+    document.getElementById('challenge-progress-card').style.display = 'none';
+    document.getElementById('challenge-tracker').style.display = 'none';
+    document.getElementById('payout-tab').style.display = 'block';
+    document.getElementById('entry-weekend-label').style.display = 'block';
+
+    const lastWithdrawal = state.withdrawals.length > 0 ? state.withdrawals[state.withdrawals.length - 1].date : null;
+    let nextDate = 'Eligible now';
+    if (lastWithdrawal) {
+      const last = new Date(lastWithdrawal);
+      const next = new Date(last);
+      let added = 0;
+      while (added < 5) {
+        next.setDate(next.getDate() + 1);
+        if (next.getDay() !== 0 && next.getDay() !== 6) added++;
+      }
+      nextDate = next.toISOString().split('T')[0];
+    }
+    document.getElementById('footer-text').textContent = `Funded Mode: Next payout eligible ${nextDate}`;
+  }
+
+  const stopBanner = document.getElementById('stop-banner');
+  const dailyLossUsed = Math.abs(Math.min(0, todayTotal));
+  const floorDanger = floorDist < 50;
+  if (dailyLossUsed >= 90 || floorDanger) {
+    stopBanner.style.display = 'block';
+  } else {
+    stopBanner.style.display = 'none';
+  }
+
+  document.getElementById('balance-input').value = '';
+  saveState();
+  updateHeaderStats();
+}
+
+function updateBalance() {
+  const val = parseFloat(document.getElementById('balance-input').value);
+  if (val && val > 0) {
+    state.balance = val;
+    updateUI();
+  }
+}
+
+function logQuickTrade() {
+  const pnl = parseFloat(document.getElementById('quick-pnl').value);
+  if (isNaN(pnl)) return;
+  
+  const today = state.todayDate;
+  state.daysTradedSet.add(today);
+  state.balance += pnl;
+  
+  state.journal.push({
+    date: today,
+    instrument: 'Quick Entry',
+    pnl: pnl,
+    notes: 'Quick log from dashboard',
+    news: false,
+    weekend: false
+  });
+  
+  document.getElementById('quick-pnl').value = '';
+  updateUI();
+  renderJournal();
+  calculateStats();
+  renderCalendar();
+}
+
+function analyzeYesterday() {
+  const yesterdayPnL = parseFloat(document.getElementById('yesterday-pnl').value);
+  if (isNaN(yesterdayPnL)) {
+    alert('Please enter a valid P&L amount');
+    return;
+  }
+
+  const analysisDiv = document.getElementById('yesterday-analysis');
+  analysisDiv.style.display = 'block';
+
+  // Calculate today's constraints
+  const currentBuffer = state.balance - 5640;
+  const maxDailyLoss = 180;
+  const maxTotalLoss = 360;
+  const usedTotalLoss = 6000 - state.balance;
+  const remainingTotalBuffer = maxTotalLoss - usedTotalLoss;
+
+  // Today's max safe loss is the SMALLER of: daily limit OR remaining total buffer
+  const todayMaxSafeLoss = Math.min(maxDailyLoss, remainingTotalBuffer);
+
+  document.getElementById('analysis-daily-max').textContent = '$' + todayMaxSafeLoss.toFixed(2);
+  document.getElementById('analysis-total-buffer').textContent = '$' + remainingTotalBuffer.toFixed(2);
+  
+  const totalBufferEl = document.getElementById('analysis-total-buffer');
+  if (remainingTotalBuffer < 50) {
+    totalBufferEl.style.color = '#c0392b';
+  } else if (remainingTotalBuffer < 150) {
+    totalBufferEl.style.color = '#e67e22';
+  } else {
+    totalBufferEl.style.color = '#27ae60';
+  }
+
+  // Generate alerts
+  const alertsDiv = document.getElementById('analysis-alerts');
+  const alerts = [];
+
+  if (yesterdayPnL < -90) {
+    alerts.push({ type: 'danger', msg: '🚨 Yesterday was a severe loss day (-$' + Math.abs(yesterdayPnL).toFixed(2) + '). Strong recommendation: Take today off or trade minimum size only.' });
+  } else if (yesterdayPnL < -60) {
+    alerts.push({ type: 'warning', msg: '⚠️ Yesterday was a losing day. Be extra cautious today — avoid revenge trading.' });
+  } else if (yesterdayPnL > 100) {
+    alerts.push({ type: 'success', msg: '✅ Strong performance yesterday (+$' + yesterdayPnL.toFixed(2) + '). Maintain discipline, don\'t overtrade.' });
+  }
+
+  if (remainingTotalBuffer < 100) {
+    alerts.push({ type: 'danger', msg: '🚨 CRITICAL: Only $' + remainingTotalBuffer.toFixed(2) + ' from account floor. Today\'s max loss is severely restricted.' });
+  } else if (remainingTotalBuffer < 180) {
+    alerts.push({ type: 'warning', msg: '⚠️ Your total buffer is less than one daily limit. One bad day can breach the account.' });
+  }
+
+  if (todayMaxSafeLoss < 90) {
+    alerts.push({ type: 'warning', msg: '⚠️ Your safe loss for today is only $' + todayMaxSafeLoss.toFixed(2) + ' (less than half the daily limit). Trade conservatively or sit out.' });
+  }
+
+  // Phase-specific alerts
+  if (state.phase === 'funded') {
+    alerts.push({ type: 'info', msg: '📋 FUNDED RULES ACTIVE: 3% open risk cap ($180), weekend holding banned, news trading 40% profit, SL required within 3 minutes.' });
+  } else {
+    const profitToGo = 600 - (state.balance - 6000);
+    if (profitToGo <= 100 && profitToGo > 0) {
+      alerts.push({ type: 'info', msg: '🎯 You are close to passing the challenge! Only $' + profitToGo.toFixed(2) + ' profit needed. Stay disciplined.' });
+    }
+  }
+
+  if (alerts.length === 0) {
+    alertsDiv.innerHTML = '<div class="alert alert-success">✅ Risk levels acceptable. Trade with normal caution.</div>';
+  } else {
+    alertsDiv.innerHTML = alerts.map(a => `<div class="alert alert-${a.type}">${a.msg}</div>`).join('');
+  }
+
+  // Performance insights
+  const insightsDiv = document.getElementById('analysis-insights');
+  let insights = [];
+
+  const recentEntries = state.journal.slice(-5);
+  const recentPnL = recentEntries.reduce((sum, e) => sum + e.pnl, 0);
+  const recentWins = recentEntries.filter(e => e.pnl > 0).length;
+  const recentLosses = recentEntries.filter(e => e.pnl < 0).length;
+
+  if (yesterdayPnL < 0) {
+    const streak = getLosingStreak();
+    if (streak >= 2) {
+      insights.push(`• You're on a ${streak}-day losing streak. This is a sign to review your strategy or take a break.`);
+    }
+    insights.push(`• Yesterday's loss represents ${Math.abs((yesterdayPnL / 180) * 100).toFixed(1)}% of your daily limit.`);
+  } else if (yesterdayPnL > 0) {
+    const winStreak = getWinningStreak();
+    if (winStreak >= 3) {
+      insights.push(`• You're on a ${winStreak}-day winning streak. Great momentum, but don't get overconfident.`);
+    }
+    insights.push(`• Yesterday's profit added ${((yesterdayPnL / 6000) * 100).toFixed(2)}% to your account.`);
+  }
+
+  if (recentPnL < 0 && recentWins < recentLosses) {
+    insights.push(`• Last 5 trades: ${recentWins} wins, ${recentLosses} losses. Net: $${recentPnL.toFixed(2)}. Your recent edge is negative.`);
+  }
+
+  const totalPnL = state.balance - 6000;
+  const daysTraded = state.daysTradedSet.size;
+  if (daysTraded > 0) {
+    const avgPerDay = totalPnL / daysTraded;
+    insights.push(`• Your average P&L per trading day is $${avgPerDay.toFixed(2)} over ${daysTraded} days.`);
+  }
+
+  // Phase-specific insights
+  if (state.phase === 'funded') {
+    insights.push(`• <strong>Funded phase:</strong> No profit target. Focus on consistency and protecting your buffer.`);
+  } else {
+    const profitNeeded = 600 - (state.balance - 6000);
+    if (profitNeeded > 0) {
+      insights.push(`• <strong>Challenge phase:</strong> $${profitNeeded.toFixed(2)} profit remaining to pass. Need ${Math.max(0, 2 - daysTraded)} more trading day(s).`);
+    }
+  }
+
+  insightsDiv.innerHTML = insights.length > 0 ? insights.join('<br>') : '• Not enough data for detailed insights yet. Keep logging trades.';
+
+  // Recommendations
+  const recDiv = document.getElementById('analysis-recommendations');
+  let recommendations = [];
+
+  if (yesterdayPnL < -90) {
+    recommendations.push('• <strong>Sit out today</strong> or trade only 1 position at minimum size.');
+    recommendations.push('• Review yesterday\'s trades: identify what went wrong (strategy, timing, emotions).');
+    recommendations.push('• Do not attempt to "win back" yesterday\'s losses — this leads to overtrading.');
+  } else if (yesterdayPnL < -60) {
+    recommendations.push('• Reduce position size by 50% for today\'s trades.');
+    recommendations.push('• Set a hard stop at $' + (todayMaxSafeLoss / 2).toFixed(2) + ' loss for the day (50% of your safe limit).');
+    recommendations.push('• Trade only your highest-probability setups — skip marginal entries.');
+  } else if (yesterdayPnL < 0) {
+    recommendations.push('• Trade normal size but stick to 1-2 trades maximum today.');
+    recommendations.push('• Avoid trading during news events or high-volatility sessions.');
+  } else if (yesterdayPnL > 80) {
+    recommendations.push('• Excellent performance, but avoid overtrading today. Quality > quantity.');
+    recommendations.push('• Don\'t increase risk per trade just because you had a good day.');
+    recommendations.push('• Lock in today with 1-2 solid trades, then walk away.');
+  }
+
+  if (remainingTotalBuffer < 150) {
+    recommendations.push('• <strong>Your account is in danger zone.</strong> Consider stopping trading until you can add more capital or reset.');
+  }
+
+  // Phase-specific recommendations
+  if (state.phase === 'challenge') {
+    const profitNeeded = 600 - (state.balance - 6000);
+    if (profitNeeded > 0 && profitNeeded <= 100) {
+      recommendations.push(`• <strong>Challenge ending:</strong> You need only $${profitNeeded.toFixed(2)} more. Take high-probability trades only — don't rush.`);
+    } else if (profitNeeded > 0) {
+      recommendations.push(`• You need $${profitNeeded.toFixed(2)} more profit to pass. Consistency wins — aim for steady daily gains.`);
+    }
+  } else {
+    recommendations.push('• <strong>Funded phase rules:</strong> Remember the 3% open risk cap, weekend ban, and 3-minute SL deadline.');
+    recommendations.push('• You can request payouts every 5 business days. Don\'t withdraw 100% — keep a profit cushion.');
+  }
+
+  if (recommendations.length === 0) {
+    recommendations.push('• Continue with your normal trading plan.');
+    recommendations.push('• Monitor the daily loss tracker throughout the session.');
+  }
+
+  recDiv.innerHTML = recommendations.join('<br>');
+
+  // Position sizing guide
+  const posDiv = document.getElementById('analysis-position-sizing');
+  const softStop = todayMaxSafeLoss * 0.5;
+  const conservativeRisk = todayMaxSafeLoss * 0.33;
+
+  let posGuide = [];
+  posGuide.push(`• <strong>Aggressive (full risk):</strong> Max loss per trade = $${(todayMaxSafeLoss / 2).toFixed(2)} (allows 2 losses before limit)`);
+  posGuide.push(`• <strong>Moderate (recommended):</strong> Max loss per trade = $${(todayMaxSafeLoss / 3).toFixed(2)} (allows 3 losses before limit)`);
+  posGuide.push(`• <strong>Conservative:</strong> Max loss per trade = $${(todayMaxSafeLoss / 5).toFixed(2)} (allows 5 losses before limit)`);
+  posGuide.push(`• <strong>Soft stop for today:</strong> Stop trading if you lose $${softStop.toFixed(2)} (50% of today's max)`);
+
+  if (yesterdayPnL < -60) {
+    posGuide.push(`<br><span style="color:#c0392b">⚠️ After yesterday's loss, use <strong>Conservative</strong> sizing only.</span>`);
+  }
+
+  // Phase-specific position sizing
+  if (state.phase === 'funded') {
+    posGuide.push(`<br><span style="color:#0A1F44">📋 <strong>Funded phase reminder:</strong> Your max open risk across ALL positions is $180 at any moment. Factor this into every trade.</span>`);
+  }
+
+  posDiv.innerHTML = posGuide.join('<br>');
+}
+
+function getLosingStreak() {
+  const sortedDates = Array.from(state.daysTradedSet).sort().reverse();
+  let streak = 0;
+  for (const date of sortedDates) {
+    const dayPnL = state.journal.filter(e => e.date === date).reduce((sum, e) => sum + e.pnl, 0);
+    if (dayPnL < 0) {
+      streak++;
+    } else {
+      break;
+    }
+  }
+  return streak;
+}
+
+function getWinningStreak() {
+  const sortedDates = Array.from(state.daysTradedSet).sort().reverse();
+  let streak = 0;
+  for (const date of sortedDates) {
+    const dayPnL = state.journal.filter(e => e.date === date).reduce((sum, e) => sum + e.pnl, 0);
+    if (dayPnL > 0) {
+      streak++;
+    } else {
+      break;
+    }
+  }
+  return streak;
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+}
+
+function addJournalEntry() {
+  const date = document.getElementById('entry-date').value;
+  const instrument = document.getElementById('entry-instrument').value;
+  const pnl = parseFloat(document.getElementById('entry-pnl').value);
+  const notes = document.getElementById('entry-notes').value;
+  const news = document.getElementById('entry-news').checked;
+  const weekend = state.phase === 'funded' ? document.getElementById('entry-weekend').checked : false;
+
+  if (!date || isNaN(pnl)) {
+    alert('Please fill date and P&L');
+    return;
+  }
+
+  state.daysTradedSet.add(date);
+  state.balance += pnl;
+
+  state.journal.push({ date, instrument, pnl, notes, news, weekend });
+
+  document.getElementById('entry-date').value = '';
+  document.getElementById('entry-pnl').value = '';
+  document.getElementById('entry-notes').value = '';
+  document.getElementById('entry-news').checked = false;
+  document.getElementById('entry-weekend').checked = false;
+
+  updateUI();
+  renderJournal();
+  calculateStats();
+}
+
+function renderJournal() {
+  const list = document.getElementById('journal-list');
+  const recent = state.journal.slice(-14).reverse();
+  
+  if (recent.length === 0) {
+    list.innerHTML = '<p style="color:#999">No entries yet.</p>';
+    return;
+  }
+
+  list.innerHTML = recent.map((e, i) => {
+    const actualIndex = state.journal.length - 1 - i;
+    return `
+      <div class="journal-entry">
+        <div class="date">${e.date}</div>
+        <span class="instrument">${e.instrument}</span>
+        <div class="pnl ${e.pnl >= 0 ? 'profit' : 'loss'}">${e.pnl >= 0 ? '+' : ''}$${e.pnl.toFixed(2)}</div>
+        ${e.notes ? `<div class="notes">${e.notes}</div>` : ''}
+        ${e.news ? '<span style="font-size:0.8rem;color:#e67e22">📰 News trade</span>' : ''}
+        ${e.weekend ? '<span style="font-size:0.8rem;color:#c0392b">🌙 Weekend hold</span>' : ''}
+        <div class="actions">
+          <button onclick="deleteEntry(${actualIndex})" class="btn-danger">Delete</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function deleteEntry(index) {
+  if (!confirm('Delete this entry?')) return;
+  const entry = state.journal[index];
+  state.balance -= entry.pnl;
+  state.journal.splice(index, 1);
+  updateUI();
+  renderJournal();
+  calculateStats();
+}
+
+function updateCalcPrice() {
+  const sel = document.getElementById('calc-instrument');
+  document.getElementById('calc-price').value = sel.value;
+}
+
+function calculateLots() {
+  const price = parseFloat(document.getElementById('calc-price').value);
+  const sl = parseFloat(document.getElementById('calc-sl').value);
+  const existing = parseFloat(document.getElementById('calc-existing').value);
+
+  const budget = Math.max(0, 180 - existing);
+  const riskPerLot = sl * 1;
+  const maxLots = budget / riskPerLot;
+  const safeLots = Math.floor(maxLots * 100) / 100;
+
+  const contractVal = safeLots * 100 * price;
+  const margin = contractVal / 30;
+  const marginPct = (margin / 6000) * 100;
+
+  document.getElementById('calc-budget').textContent = '$' + budget.toFixed(0);
+  document.getElementById('calc-lots').textContent = safeLots.toFixed(2);
+  document.getElementById('calc-margin').textContent = '$' + Math.round(margin).toLocaleString();
+  document.getElementById('calc-margin-pct').textContent = marginPct.toFixed(1) + '%';
+
+  const alertDiv = document.getElementById('calc-alert');
+  const lotsEl = document.getElementById('calc-lots');
+
+  if (existing >= 180) {
+    alertDiv.className = 'alert alert-danger';
+    alertDiv.innerHTML = '⚠️ No risk budget left. Close an existing position before opening new.';
+    lotsEl.style.color = '#c0392b';
+  } else if (marginPct > 70) {
+    alertDiv.className = 'alert alert-danger';
+    alertDiv.innerHTML = '⚠️ Margin exceeds 70% hard cap. Reduce lot size.';
+    lotsEl.style.color = '#c0392b';
+  } else if (marginPct > 40) {
+    alertDiv.className = 'alert alert-warning';
+    alertDiv.innerHTML = '⚠️ Margin high (' + marginPct.toFixed(1) + '%). Consider reducing to stay below 30-40%.';
+    lotsEl.style.color = '#e67e22';
+  } else {
+    alertDiv.className = 'alert alert-success';
+    alertDiv.innerHTML = '✅ Within limits. Max lots shown is safe. Set SL within 3 minutes of entry.';
+    lotsEl.style.color = '#27ae60';
+  }
+
+  document.getElementById('calc-results').style.display = 'block';
+}
+
+function populateChecklist() {
+  const items = state.phase === 'challenge' ? challengeChecklist : fundedChecklist;
+  state.checklist = items;
+  const list = document.getElementById('checklist-items');
+  list.innerHTML = items.map((item, i) => {
+    const checked = state.checklistDone.includes(i);
+    return `
+      <li class="${checked ? 'checked' : ''}" onclick="toggleCheck(${i})">
+        <div class="checkbox">${checked ? '✓' : ''}</div>
+        <span>${item}</span>
+      </li>
+    `;
+  }).join('');
+  document.getElementById('checklist-count').textContent = state.checklistDone.length;
+}
+
+function toggleCheck(i) {
+  const idx = state.checklistDone.indexOf(i);
+  if (idx > -1) {
+    state.checklistDone.splice(idx, 1);
+  } else {
+    state.checklistDone.push(i);
+  }
+  populateChecklist();
+  saveState();
+}
+
+function resetChecklist() {
+  state.checklistDone = [];
+  populateChecklist();
+  saveState();
+}
+
+function updateRulesPanel() {
+  const panel = document.getElementById('rules-content');
+  
+  const rules = state.phase === 'challenge' ? [
+    { title: 'Daily Loss Limit', desc: '3% = $180 per day. Resets at 00:00 server time (UTC).', status: 'compliant' },
+    { title: 'Max Overall Loss', desc: '6% = $360. Account floor is $5,640 — never drop below this.', status: 'compliant' },
+    { title: 'Profit Target', desc: '10% = $600 profit to pass challenge.', status: 'compliant' },
+    { title: 'Minimum Trading Days', desc: 'Must trade on at least 2 separate days to qualify.', status: 'compliant' },
+    { title: 'Weekend Holding', desc: '✅ ALLOWED during challenge. No restrictions.', status: 'compliant' },
+    { title: 'News Trading', desc: '✅ ALLOWED during challenge. No profit reduction.', status: 'compliant' },
+    { title: 'Leverage', desc: '1:30 on all instruments (Forex, Gold, Indices).', status: 'compliant' }
+  ] : [
+    { title: 'Daily Loss Limit', desc: '3% = $180 per day. Soft stop at $90.', status: 'compliant' },
+    { title: 'Max Overall Loss', desc: '6% = $360. Floor at $5,640 forever (never moves up).', status: 'compliant' },
+    { title: '3% Open Risk Rule', desc: 'Max $180 combined SL risk across all open positions at any moment.', status: 'compliant' },
+    { title: 'Stop-Loss Deadline', desc: 'Must place SL within 3 minutes of entry. No SL = 100% risk.', status: 'compliant' },
+    { title: 'News Trading (40% Rule)', desc: 'Trades within 5 min of high-impact news: only 40% of profit counts.', status: 'compliant' },
+    { title: 'Weekend Holding BAN', desc: '🚫 Close ALL positions before Friday market close. Monday gap = breach.', status: 'warning' },
+    { title: 'Inactivity Deactivation', desc: 'Account closes after 30 consecutive days without a trade.', status: 'compliant' },
+    { title: 'Leverage', desc: '1:30 Forex | 1:5 Commodities/Indices (funded reduction).', status: 'compliant' }
+  ];
+
+  panel.innerHTML = rules.map(r => `
+    <div class="rule-card">
+      <h4>${r.title} <span class="rule-status ${r.status}">${r.status === 'compliant' ? '✓ Compliant' : '⚠ Watch Out'}</span></h4>
+      <p>${r.desc}</p>
+    </div>
+  `).join('');
+}
+
+function passChallengeModal() {
+  document.getElementById('pass-modal').classList.add('show');
+}
+
+function closeModal() {
+  document.getElementById('pass-modal').classList.remove('show');
+}
+
+function confirmPassChallenge() {
+  triggerConfetti();
+  
+  setTimeout(() => {
+    state.phase = 'funded';
+    state.balance = 6000; // Reset to starting balance for funded phase
+    state.challengeProfit = 0;
+    state.checklistDone = [];
+    state.autoPassTriggered = false;
+    updateUI();
+    updateRulesPanel();
+    populateChecklist();
+    closeModal();
+    alert('🎉 Congratulations! You are now in Funded Mode.\n\nYour balance has been reset to $6,000 for the funded phase.\n\nNew rules are now active:\n• 3% open risk rule ($180 cap)\n• Weekend holding BANNED\n• News trading: 40% profit\n• Stop-loss within 3 minutes\n• Payouts every 5 business days\n\nReview the Rules Reference tab for full details.');
+  }, 2000);
+}
+
+function triggerConfetti() {
+  const colors = ['#D4AF37', '#0A1F44', '#27ae60', '#e74c3c', '#3498db'];
+  for (let i = 0; i < 50; i++) {
+    setTimeout(() => {
+      const confetti = document.createElement('div');
+      confetti.className = 'confetti';
+      confetti.style.left = Math.random() * 100 + '%';
+      confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+      confetti.style.animationDelay = Math.random() * 0.5 + 's';
+      document.body.appendChild(confetti);
+      setTimeout(() => confetti.remove(), 3000);
+    }, i * 30);
+  }
+}
+
+function calculatePayout() {
+  const amount = parseFloat(document.getElementById('payout-amount').value);
+  if (isNaN(amount) || amount <= 0) return;
+
+  const fee = amount * 0.035;
+  const net = amount - fee;
+
+  document.getElementById('payout-fee').textContent = fee.toFixed(2);
+  document.getElementById('payout-net').textContent = net.toFixed(2);
+  document.getElementById('payout-result').style.display = 'block';
+
+  const totalProfit = state.balance - 6000;
+  if (amount >= totalProfit) {
+    document.getElementById('payout-warning').style.display = 'block';
+  } else {
+    document.getElementById('payout-warning').style.display = 'none';
+  }
+}
+
+function addWithdrawal() {
+  const date = document.getElementById('withdrawal-date').value;
+  const amount = parseFloat(document.getElementById('withdrawal-amount').value);
+  if (!date || isNaN(amount)) return;
+
+  state.withdrawals.push({ date, amount });
+  renderWithdrawals();
+  document.getElementById('withdrawal-date').value = '';
+  document.getElementById('withdrawal-amount').value = '';
+  updateUI();
+}
+
+function renderWithdrawals() {
+  const list = document.getElementById('withdrawal-list');
+  if (state.withdrawals.length === 0) {
+    list.innerHTML = '<p style="color:#999">No withdrawals logged yet.</p>';
+    return;
+  }
+  list.innerHTML = state.withdrawals.map((w, i) => `
+    <div style="border:1px solid #e0e0e0;padding:0.6rem;margin:0.3rem 0;border-radius:4px;display:flex;justify-content:space-between">
+      <span>${w.date}: $${w.amount.toFixed(2)}</span>
+      <button onclick="deleteWithdrawal(${i})" class="btn-danger" style="width:auto;padding:0.3rem 0.6rem;font-size:0.85rem">Delete</button>
+    </div>
+  `).join('');
+}
+
+function deleteWithdrawal(i) {
+  state.withdrawals.splice(i, 1);
+  renderWithdrawals();
+  saveState();
+}
+
+function calculateStats() {
+  const total = state.journal.length;
+  const wins = state.journal.filter(e => e.pnl > 0).length;
+  const winrate = total > 0 ? ((wins / total) * 100).toFixed(1) : 0;
+  
+  const profits = state.journal.filter(e => e.pnl > 0);
+  const losses = state.journal.filter(e => e.pnl < 0);
+  
+  const best = profits.length > 0 ? Math.max(...profits.map(e => e.pnl)) : 0;
+  const worst = losses.length > 0 ? Math.min(...losses.map(e => e.pnl)) : 0;
+  
+  const avgWin = profits.length > 0 ? (profits.reduce((s, e) => s + e.pnl, 0) / profits.length) : 0;
+  const avgLoss = losses.length > 0 ? (losses.reduce((s, e) => s + e.pnl, 0) / losses.length) : 0;
+
+  const now = new Date();
+  const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+  const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+  
+  const thisWeek = new Set(state.journal.filter(e => new Date(e.date) >= weekAgo).map(e => e.date)).size;
+  const thisMonth = new Set(state.journal.filter(e => new Date(e.date) >= monthAgo).map(e => e.date)).size;
+
+  document.getElementById('stats-total').textContent = total;
+  document.getElementById('stats-winrate').textContent = winrate + '%';
+  document.getElementById('stats-best').textContent = '$' + best.toFixed(2);
+  document.getElementById('stats-worst').textContent = '$' + worst.toFixed(2);
+  document.getElementById('stats-avg-win').textContent = '$' + avgWin.toFixed(2);
+  document.getElementById('stats-avg-loss').textContent = '$' + avgLoss.toFixed(2);
+  document.getElementById('stats-week').textContent = thisWeek;
+  document.getElementById('stats-month').textContent = thisMonth;
+}
+
+function checkAlerts() {
+  const now = Date.now();
+  if (now - state.lastAlertCheck < 60000) return;
+  state.lastAlertCheck = now;
+
+  const panel = document.getElementById('alerts-panel');
+  const alerts = [];
+
+  const todayTotal = state.journal.filter(e => e.date === state.todayDate).reduce((sum, e) => sum + e.pnl, 0);
+  const dailyLossUsed = Math.abs(Math.min(0, todayTotal));
+  const dailyRemaining = 180 - dailyLossUsed;
+
+  if (dailyLossUsed >= 90) {
+    alerts.push({ type: 'danger', msg: `⚠️ You've lost $${dailyLossUsed.toFixed(2)} today. Only $${dailyRemaining.toFixed(2)} remaining before daily limit breach.` });
+  } else if (dailyLossUsed >= 60) {
+    alerts.push({ type: 'warning', msg: `⚠️ Daily loss at $${dailyLossUsed.toFixed(2)}. $${dailyRemaining.toFixed(2)} remaining. Trade carefully.` });
+  }
+
+  const floorDist = state.balance - 5640;
+  if (floorDist < 50) {
+    alerts.push({ type: 'danger', msg: `🚨 CRITICAL: Only $${floorDist.toFixed(2)} from account floor. Stop trading immediately.` });
+  } else if (floorDist < 150) {
+    alerts.push({ type: 'warning', msg: `⚠️ Warning: $${floorDist.toFixed(2)} from floor. One bad trade could breach.` });
+  }
+
+  if (state.phase === 'funded') {
+    const allDates = Array.from(state.daysTradedSet).map(d => new Date(d));
+    if (allDates.length > 0) {
+      const lastTrade = Math.max(...allDates);
+      const daysSince = Math.floor((Date.now() - lastTrade) / (1000 * 60 * 60 * 24));
+      if (daysSince >= 28) {
+        alerts.push({ type: 'warning', msg: `⏰ You haven't traded in ${daysSince} days. Account deactivates after 30 days of inactivity.` });
+      }
+    }
+
+    const today = new Date();
+    if (today.getDay() === 5 && today.getHours() >= 15) {
+      alerts.push({ type: 'danger', msg: `🌙 It's Friday after 3 PM GMT. Close ALL positions before market close — weekend holding is banned.` });
+    }
+  }
+
+  if (alerts.length === 0) {
+    panel.innerHTML = '<div class="alert alert-success">✅ All systems green. No active warnings.</div>';
+  } else {
+    panel.innerHTML = alerts.map(a => `<div class="alert alert-${a.type}">${a.msg}</div>`).join('');
+  }
+}
+
+function exportData() {
+  const json = JSON.stringify(state, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'rmc_fundednext_backup_' + new Date().toISOString().split('T')[0] + '.json';
+  a.click();
+}
+
+function importDataPrompt() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'application/json';
+  input.onchange = e => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onload = event => {
+      try {
+        const imported = JSON.parse(event.target.result);
+        state = { ...state, ...imported };
+        if (state.daysTradedSet && Array.isArray(state.daysTradedSet)) {
+          state.daysTradedSet = new Set(state.daysTradedSet);
+        }
+        updateUI();
+        updateRulesPanel();
+        populateChecklist();
+        renderJournal();
+        calculateStats();
+        alert('Data imported successfully!');
+      } catch (err) {
+        alert('Error importing data: ' + err.message);
+      }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
+function resetAllData() {
+  if (!confirm('⚠️ This will DELETE all your data permanently. Are you absolutely sure?')) return;
+  if (!confirm('Final confirmation: Reset all data? This cannot be undone.')) return;
+  
+  state = {
+    phase: 'challenge',
+    balance: 6000,
+    challengeProfit: 0,
+    daysTradedSet: new Set(),
+    todayPnL: 0,
+    todayDate: new Date().toISOString().split('T')[0],
+    journal: [],
+    checklist: [],
+    checklistDone: [],
+    withdrawals: [],
+    lastAlertCheck: Date.now(),
+    calendarMonth: new Date().getMonth(),
+    calendarYear: new Date().getFullYear(),
+    autoPassTriggered: false
+  };
+  
+  saveState();
+  updateUI();
+  updateRulesPanel();
+  populateChecklist();
+  renderJournal();
+  calculateStats();
+  alert('All data has been reset.');
+}
+
+function renderCalendar() {
+  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  const monthName = monthNames[state.calendarMonth] + ' ' + state.calendarYear;
+  document.getElementById('calendar-month').textContent = monthName;
+
+  const firstDay = new Date(state.calendarYear, state.calendarMonth, 1).getDay();
+  const daysInMonth = new Date(state.calendarYear, state.calendarMonth + 1, 0).getDate();
+
+  const grid = document.getElementById('calendar-grid');
+  grid.innerHTML = '';
+
+  const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  dayHeaders.forEach(day => {
+    const cell = document.createElement('div');
+    cell.className = 'calendar-cell header';
+    cell.textContent = day;
+    grid.appendChild(cell);
+  });
+
+  for (let i = 0; i < firstDay; i++) {
+    const cell = document.createElement('div');
+    cell.className = 'calendar-cell empty';
+    grid.appendChild(cell);
+  }
+
+  for (let day = 1; day <= daysInMonth; day++) {
+    const dateStr = `${state.calendarYear}-${String(state.calendarMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    const dayEntries = state.journal.filter(e => e.date === dateStr);
+    const dayPnL = dayEntries.reduce((sum, e) => sum + e.pnl, 0);
+    const tradesCount = dayEntries.length;
+
+    const cell = document.createElement('div');
+    cell.className = 'calendar-cell';
+    
+    // Determine cell type and styling
+    if (tradesCount > 0) {
+      // Day with trades - green for profit, red for loss
+      cell.classList.add(dayPnL >= 0 ? 'profit' : 'loss');
+    } else {
+      // Day with no trades - gray
+      cell.classList.add('no-trade');
+    }
+    
+    // Highlight today
+    if (dateStr === state.todayDate) {
+      cell.classList.add('today');
+    }
+
+    cell.innerHTML = `
+      <div class="calendar-date">${day}</div>
+      ${tradesCount > 0 ? `
+        <div class="calendar-pnl ${dayPnL >= 0 ? 'profit' : 'loss'}">${dayPnL >= 0 ? '+' : ''}$${dayPnL.toFixed(2)}</div>
+        <div class="calendar-trades">${tradesCount} trade${tradesCount > 1 ? 's' : ''}</div>
+      ` : '<div style="font-size:0.75rem;color:#999;margin-top:0.3rem">No trades</div>'}
+    `;
+
+    cell.onclick = () => showDayDetails(dateStr);
+    grid.appendChild(cell);
+  }
+}
+
+function showDayDetails(dateStr) {
+  const dayEntries = state.journal.filter(e => e.date === dateStr);
+  const detailsDiv = document.getElementById('calendar-details');
+
+  if (dayEntries.length === 0) {
+    detailsDiv.innerHTML = `
+      <h4 style="color:#0A1F44;margin:0 0 1rem">${dateStr}</h4>
+      <div style="background:#f9f9f9;padding:1.5rem;border-radius:6px;text-align:center">
+        <div style="font-size:3rem;margin-bottom:0.5rem">📅</div>
+        <p style="color:#999;margin:0;font-size:0.95rem">No trades recorded on this date</p>
+      </div>
+    `;
+    return;
+  }
+
+  const dayPnL = dayEntries.reduce((sum, e) => sum + e.pnl, 0);
+  
+  detailsDiv.innerHTML = `
+    <h4 style="color:#0A1F44;margin:0 0 1rem">${dateStr}</h4>
+    <div style="background:${dayPnL >= 0 ? '#e8f5e9' : '#ffebee'};padding:0.8rem;border-radius:6px;margin-bottom:1rem">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:0.9rem;color:#666">Total P&L:</span>
+        <span style="font-size:1.5rem;font-weight:700;color:${dayPnL >= 0 ? '#27ae60' : '#c0392b'}">${dayPnL >= 0 ? '+' : ''}$${dayPnL.toFixed(2)}</span>
+      </div>
+      <div style="margin-top:0.3rem;font-size:0.85rem;color:#999">${dayEntries.length} trade${dayEntries.length > 1 ? 's' : ''} executed</div>
+    </div>
+    ${dayEntries.map((e, i) => `
+      <div style="background:white;border:1px solid #e0e0e0;border-left:4px solid ${e.pnl >= 0 ? '#27ae60' : '#c0392b'};border-radius:4px;padding:0.8rem;margin:0.5rem 0">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.3rem">
+          <span style="font-weight:600;color:#0A1F44">${e.instrument}</span>
+          <span style="font-size:1.2rem;font-weight:700;color:${e.pnl >= 0 ? '#27ae60' : '#c0392b'}">${e.pnl >= 0 ? '+' : ''}$${e.pnl.toFixed(2)}</span>
+        </div>
+        ${e.notes ? `<div style="font-size:0.85rem;color:#666;margin-top:0.3rem">${e.notes}</div>` : ''}
+        ${e.news ? '<div style="font-size:0.75rem;color:#e67e22;margin-top:0.3rem">📰 News trade</div>' : ''}
+        ${e.weekend ? '<div style="font-size:0.75rem;color:#c0392b;margin-top:0.3rem">🌙 Weekend hold</div>' : ''}
+      </div>
+    `).join('')}
+  `;
+}
+
+function changeMonth(direction) {
+  state.calendarMonth += direction;
+  
+  if (state.calendarMonth > 11) {
+    state.calendarMonth = 0;
+    state.calendarYear++;
+  } else if (state.calendarMonth < 0) {
+    state.calendarMonth = 11;
+    state.calendarYear--;
+  }
+  
+  renderCalendar();
+  saveState();
+}
+
+document.getElementById('entry-date').value = new Date().toISOString().split('T')[0];
+document.getElementById('withdrawal-date').value = new Date().toISOString().split('T')[0];
+
+loadState();
+setInterval(checkAlerts, 60000);
+</script>
+
+</body>
+</html>
