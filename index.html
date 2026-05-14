@@ -4,8 +4,407 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RMC FundedNext Trade Guardian</title>
+
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
+/* Login Screen Styles */
+#login-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0d1b2a 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  overflow: hidden;
+}
+#login-screen.hidden { display: none; }
+
+/* Animated Chart Background */
+.chart-background {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  opacity: 0.15;
+  overflow: hidden;
+}
+.chart-line {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 60%;
+  background: linear-gradient(to top, transparent, rgba(212, 175, 55, 0.3));
+  clip-path: polygon(
+    0% 70%, 5% 65%, 10% 68%, 15% 55%, 20% 58%, 25% 50%, 
+    30% 45%, 35% 48%, 40% 40%, 45% 42%, 50% 35%, 55% 38%,
+    60% 30%, 65% 28%, 70% 32%, 75% 25%, 80% 22%, 85% 26%,
+    90% 20%, 95% 18%, 100% 15%, 100% 100%, 0% 100%
+  );
+  animation: chartPulse 3s ease-in-out infinite;
+}
+@keyframes chartPulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.5; }
+}
+
+/* Floating Market Stats */
+.market-stats {
+  position: absolute;
+  top: 30px;
+  right: 30px;
+  display: flex;
+  gap: 20px;
+  color: rgba(255,255,255,0.6);
+  font-size: 0.85rem;
+}
+.market-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+.market-stat .label { font-size: 0.75rem; opacity: 0.7; }
+.market-stat .value { font-size: 1.1rem; font-weight: 600; }
+.market-stat .value.green { color: #27ae60; }
+.market-stat .value.red { color: #e74c3c; }
+
+/* Candlestick Pattern Decoration */
+.candlesticks {
+  position: absolute;
+  bottom: 50px;
+  left: 50px;
+  display: flex;
+  gap: 8px;
+  opacity: 0.2;
+}
+.candle {
+  width: 4px;
+  background: #27ae60;
+  border-radius: 2px;
+  animation: candleGrow 2s ease-in-out infinite;
+}
+.candle:nth-child(1) { height: 60px; animation-delay: 0s; }
+.candle:nth-child(2) { height: 45px; background: #e74c3c; animation-delay: 0.2s; }
+.candle:nth-child(3) { height: 70px; animation-delay: 0.4s; }
+.candle:nth-child(4) { height: 55px; animation-delay: 0.6s; }
+.candle:nth-child(5) { height: 80px; background: #e74c3c; animation-delay: 0.8s; }
+@keyframes candleGrow {
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(1.1); }
+}
+
+/* Grid Pattern Overlay */
+.grid-overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    linear-gradient(rgba(212, 175, 55, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(212, 175, 55, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+  opacity: 0.5;
+}
+
+/* Login Card */
+.login-card {
+  background: rgba(15, 20, 35, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  border-radius: 16px;
+  padding: 3rem 2.5rem;
+  box-shadow: 
+    0 20px 60px rgba(0,0,0,0.5),
+    0 0 40px rgba(212, 175, 55, 0.1);
+  max-width: 420px;
+  width: 90%;
+  position: relative;
+  z-index: 10;
+}
+
+/* Glowing Logo/Brand */
+.login-brand {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+.login-brand .icon {
+  width: 70px;
+  height: 70px;
+  margin: 0 auto 1rem;
+  background: linear-gradient(135deg, #D4AF37 0%, #f0c850 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  box-shadow: 0 0 30px rgba(212, 175, 55, 0.4);
+  animation: glow 2s ease-in-out infinite;
+}
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 30px rgba(212, 175, 55, 0.4); }
+  50% { box-shadow: 0 0 40px rgba(212, 175, 55, 0.6); }
+}
+
+.login-card h1 {
+  font-family: 'Cormorant Garamond', serif;
+  color: white;
+  margin-bottom: 0.3rem;
+  font-size: 2rem;
+  text-align: center;
+  font-weight: 700;
+}
+.login-card .subtitle {
+  color: #D4AF37;
+  font-size: 0.9rem;
+  margin-bottom: 2rem;
+  text-align: center;
+  opacity: 0.9;
+}
+
+/* Trading-Style Inputs */
+.login-card input {
+  width: 100%;
+  padding: 1rem 1.2rem;
+  margin: 0.7rem 0;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  border-radius: 8px;
+  font-size: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+  transition: all 0.3s;
+}
+.login-card input::placeholder { color: rgba(255,255,255,0.4); }
+.login-card input:focus {
+  outline: none;
+  border-color: #D4AF37;
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+}
+
+/* Trading Button */
+.login-card button {
+  width: 100%;
+  padding: 1rem;
+  background: linear-gradient(135deg, #D4AF37 0%, #f0c850 100%);
+  color: #0A1F44;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 1.5rem;
+  transition: all 0.3s;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+}
+.login-card button:hover { 
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(212, 175, 55, 0.4);
+}
+.login-card button:active { transform: translateY(0); }
+
+/* Error Alert */
+.login-error {
+  background: rgba(231, 76, 60, 0.2);
+  border: 1px solid rgba(231, 76, 60, 0.5);
+  color: #ff6b6b;
+  padding: 0.9rem;
+  border-radius: 8px;
+  margin-top: 1rem;
+  display: none;
+  font-size: 0.9rem;
+}
+.login-error.show { display: block; }
+
+/* Market Ticker at Bottom */
+.market-ticker {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(10, 14, 39, 0.8);
+  backdrop-filter: blur(10px);
+  padding: 12px 0;
+  overflow: hidden;
+  border-top: 1px solid rgba(212, 175, 55, 0.2);
+}
+.ticker-content {
+  display: flex;
+  gap: 40px;
+  animation: tickerScroll 30s linear infinite;
+  white-space: nowrap;
+}
+@keyframes tickerScroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.ticker-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255,255,255,0.7);
+  font-size: 0.85rem;
+}
+.ticker-item .pair { font-weight: 600; color: white; }
+.ticker-item .price { color: #D4AF37; }
+.ticker-item .change { font-weight: 600; }
+.ticker-item .change.up { color: #27ae60; }
+.ticker-item .change.down { color: #e74c3c; }
+
+@media (max-width: 768px) {
+  .login-card { 
+    padding: 2rem 1.5rem;
+    max-width: 95%;
+  }
+  .market-stats { 
+    top: 15px;
+    right: 15px;
+    font-size: 0.75rem;
+    gap: 12px;
+  }
+  .candlesticks { display: none; }
+  .login-brand .icon { width: 60px; height: 60px; font-size: 1.6rem; }
+  .login-card h1 { font-size: 1.6rem; }
+}
+#app-container { display: none; }
+#app-container.show { display: block; }
+.user-info {
+  display: inline-block;
+  margin-left: 1rem;
+  padding: 4px 12px;
+  background: rgba(212, 175, 55, 0.2);
+  border-radius: 20px;
+  font-size: 0.85rem;
+}
+.logout-btn {
+  background: rgba(255,255,255,0.2);
+  border: 1px solid rgba(255,255,255,0.3);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  margin-left: 1rem;
+}
+.logout-btn:hover { background: rgba(255,255,255,0.3); }
+
+/* Hamburger Menu Styles */
+.mobile-menu-btn {
+  display: none;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  z-index: 1000;
+}
+.mobile-menu-btn:hover { opacity: 0.8; }
+
+.mobile-menu {
+  display: none;
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: 280px;
+  height: 100%;
+  background: #0A1F44;
+  box-shadow: -2px 0 10px rgba(0,0,0,0.3);
+  transition: right 0.3s ease;
+  z-index: 9999;
+  overflow-y: auto;
+  padding: 80px 0 20px;
+}
+.mobile-menu.open { right: 0; }
+
+.mobile-menu-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  z-index: 9998;
+}
+.mobile-menu-overlay.show { display: block; }
+
+.mobile-menu-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 2rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  line-height: 1;
+}
+
+.mobile-menu-item {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  color: white;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.mobile-menu-item:hover { background: rgba(255,255,255,0.1); }
+.mobile-menu-item.active { background: rgba(212, 175, 55, 0.2); border-left: 4px solid #D4AF37; }
+
+.mobile-user-info {
+  padding: 1rem 1.5rem;
+  border-bottom: 2px solid rgba(255,255,255,0.2);
+  margin-bottom: 1rem;
+}
+.mobile-user-info .email {
+  color: #D4AF37;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+.mobile-user-info .logout-mobile {
+  background: rgba(255,255,255,0.2);
+  border: 1px solid rgba(255,255,255,0.3);
+  color: white;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  width: 100%;
+  font-size: 0.9rem;
+  cursor: pointer;
+  margin-top: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .mobile-menu-btn { display: block; }
+  .mobile-menu { display: block; }
+  
+  .tabs { 
+    display: none !important;
+  }
+  
+  .header h1 {
+    font-size: 1.4rem;
+    padding-right: 60px;
+  }
+  
+  .user-info, .logout-btn {
+    display: none !important;
+  }
+  
+  .phase-badge {
+    display: block;
+    margin: 0.5rem 0;
+  }
+}
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -306,10 +705,176 @@ button.btn-danger:hover { background: #a02d23; }
 </head>
 <body>
 
+<!-- Login Screen -->
+<div id="login-screen">
+  <!-- Animated Chart Background -->
+  <div class="chart-background">
+    <div class="chart-line"></div>
+  </div>
+  
+  <!-- Grid Overlay -->
+  <div class="grid-overlay"></div>
+  
+  <!-- Market Stats (Top Right) -->
+  <div class="market-stats">
+    <div class="market-stat">
+      <div class="label">XAUUSD</div>
+      <div class="value green">2,645.80</div>
+    </div>
+    <div class="market-stat">
+      <div class="label">EURUSD</div>
+      <div class="value red">1.0892</div>
+    </div>
+    <div class="market-stat">
+      <div class="label">US30</div>
+      <div class="value green">43,127</div>
+    </div>
+  </div>
+  
+  <!-- Candlestick Decoration -->
+  <div class="candlesticks">
+    <div class="candle"></div>
+    <div class="candle"></div>
+    <div class="candle"></div>
+    <div class="candle"></div>
+    <div class="candle"></div>
+  </div>
+  
+  <!-- Login Card -->
+  <div class="login-card">
+    <div class="login-brand">
+      <div class="icon">📈</div>
+    </div>
+    <h1>RMC Trade Guardian</h1>
+    <p class="subtitle">Secure Trading Risk Management Portal</p>
+    <form id="login-form" onsubmit="handleLogin(event)">
+      <input type="email" id="login-email" placeholder="Email Address" required autocomplete="email">
+      <input type="password" id="login-password" placeholder="Password" required autocomplete="current-password">
+      <button type="submit">ACCESS TRADING DASHBOARD</button>
+    </form>
+    <div class="login-error" id="login-error"></div>
+  </div>
+  
+  <!-- Market Ticker (Bottom) -->
+  <div class="market-ticker">
+    <div class="ticker-content">
+      <div class="ticker-item">
+        <span class="pair">XAUUSD</span>
+        <span class="price">2,645.80</span>
+        <span class="change up">▲ +0.45%</span>
+      </div>
+      <div class="ticker-item">
+        <span class="pair">EURUSD</span>
+        <span class="price">1.0892</span>
+        <span class="change down">▼ -0.12%</span>
+      </div>
+      <div class="ticker-item">
+        <span class="pair">GBPUSD</span>
+        <span class="price">1.2734</span>
+        <span class="change up">▲ +0.28%</span>
+      </div>
+      <div class="ticker-item">
+        <span class="pair">USDJPY</span>
+        <span class="price">149.82</span>
+        <span class="change down">▼ -0.31%</span>
+      </div>
+      <div class="ticker-item">
+        <span class="pair">US30</span>
+        <span class="price">43,127</span>
+        <span class="change up">▲ +1.02%</span>
+      </div>
+      <div class="ticker-item">
+        <span class="pair">NAS100</span>
+        <span class="price">19,542</span>
+        <span class="change up">▲ +0.87%</span>
+      </div>
+      <!-- Duplicate for seamless scroll -->
+      <div class="ticker-item">
+        <span class="pair">XAUUSD</span>
+        <span class="price">2,645.80</span>
+        <span class="change up">▲ +0.45%</span>
+      </div>
+      <div class="ticker-item">
+        <span class="pair">EURUSD</span>
+        <span class="price">1.0892</span>
+        <span class="change down">▼ -0.12%</span>
+      </div>
+      <div class="ticker-item">
+        <span class="pair">GBPUSD</span>
+        <span class="price">1.2734</span>
+        <span class="change up">▲ +0.28%</span>
+      </div>
+      <div class="ticker-item">
+        <span class="pair">USDJPY</span>
+        <span class="price">149.82</span>
+        <span class="change down">▼ -0.31%</span>
+      </div>
+      <div class="ticker-item">
+        <span class="pair">US30</span>
+        <span class="price">43,127</span>
+        <span class="change up">▲ +1.02%</span>
+      </div>
+      <div class="ticker-item">
+        <span class="pair">NAS100</span>
+        <span class="price">19,542</span>
+        <span class="change up">▲ +0.87%</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Main App Container -->
+<div id="app-container">
+
 <div class="header">
-  <div class="container">
-    <h1>RMC FundedNext Trade Guardian <span class="phase-badge" id="phase-badge">CHALLENGE</span></h1>
+  <div class="container" style="position:relative">
+    <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+    <h1>
+      RMC FundedNext Trade Guardian 
+      <span class="phase-badge" id="phase-badge">CHALLENGE</span>
+      <span class="user-info" id="user-info">👤 <span id="current-user-email"></span></span>
+      <button class="logout-btn" onclick="handleLogout()">Logout</button>
+    </h1>
     <p class="subtitle" id="header-subtitle">Stellar 1-Step • $6,000 Account • Protecting you from breaches</p>
+  </div>
+</div>
+
+<!-- Mobile Menu -->
+<div class="mobile-menu-overlay" id="mobile-menu-overlay" onclick="toggleMobileMenu()"></div>
+<div class="mobile-menu" id="mobile-menu">
+  <button class="mobile-menu-close" onclick="toggleMobileMenu()">×</button>
+  
+  <div class="mobile-user-info">
+    <div class="email" id="mobile-user-email"></div>
+    <button class="logout-mobile" onclick="handleLogout(); toggleMobileMenu();">Logout</button>
+  </div>
+  
+  <div class="mobile-menu-item active" onclick="switchTabMobile('dashboard')">
+    📊 Dashboard
+  </div>
+  <div class="mobile-menu-item" onclick="switchTabMobile('calendar')">
+    📅 Calendar History
+  </div>
+  <div class="mobile-menu-item" onclick="switchTabMobile('journal')">
+    📝 Daily Journal
+  </div>
+  <div class="mobile-menu-item" onclick="switchTabMobile('calculator')">
+    🧮 Lot Calculator
+  </div>
+  <div class="mobile-menu-item" onclick="switchTabMobile('checklist')">
+    ✅ Pre-Trade Checklist
+  </div>
+  <div class="mobile-menu-item" onclick="switchTabMobile('rules')">
+    📋 Rules Reference
+  </div>
+  <div class="mobile-menu-item" id="mobile-payout-tab" style="display:none" onclick="switchTabMobile('payout')">
+    💰 Payout Planner
+  </div>
+  <div class="mobile-menu-item" onclick="switchTabMobile('stats')">
+    📈 Statistics
+  </div>
+  <div class="mobile-menu-item" onclick="switchTabMobile('settings')">
+    ⚙️ Settings
   </div>
 </div>
 
@@ -389,9 +954,26 @@ button.btn-danger:hover { background: #a02d23; }
 
     <div class="card">
       <h3>Log Today's Trade Result</h3>
-      <div class="inline-form">
-        <input type="number" id="quick-pnl" placeholder="Enter P&L ($)" step="0.01">
-        <button onclick="logQuickTrade()">Add to Today</button>
+      
+      <div id="today-pnl-display" style="display:none">
+        <div class="alert alert-info">
+          <strong>Today's P&L is locked:</strong> <span style="font-size:1.3rem;font-weight:700" id="locked-pnl-amount"></span>
+          <p style="margin:0.5rem 0 0;font-size:0.85rem">P&L cannot be changed once set to maintain accurate records. See history below.</p>
+        </div>
+        <button onclick="showOverrideConfirm()" class="btn-danger" style="margin-top:0.5rem">⚠️ Override & Change P&L (Admin Only)</button>
+      </div>
+
+      <div id="today-pnl-input" style="display:block">
+        <div class="inline-form">
+          <input type="number" id="quick-pnl" placeholder="Enter Today's Final P&L ($)" step="0.01">
+          <button onclick="logTodayFinalPnL()">Set Today's P&L</button>
+        </div>
+        <p style="font-size:0.85rem;color:#666;margin-top:0.5rem">⚠️ Once set, today's P&L cannot be edited. All changes will be tracked.</p>
+      </div>
+
+      <div id="today-pnl-history" style="margin-top:1.5rem;display:none">
+        <h4 style="color:#0A1F44;font-size:1rem;margin-bottom:0.5rem">📝 Today's P&L Change History</h4>
+        <div id="pnl-history-list" style="max-height:200px;overflow-y:auto"></div>
       </div>
     </div>
 
@@ -686,7 +1268,9 @@ let state = {
   lastAlertCheck: Date.now(),
   calendarMonth: new Date().getMonth(),
   calendarYear: new Date().getFullYear(),
-  autoPassTriggered: false
+  autoPassTriggered: false,
+  dailyPnLHistory: {}, // { 'YYYY-MM-DD': { finalPnL: 0, locked: false, changes: [{timestamp, oldValue, newValue, reason}] } }
+  todayPnLLocked: false
 };
 
 const challengeChecklist = [
@@ -934,28 +1518,178 @@ function updateBalance() {
   }
 }
 
-function logQuickTrade() {
+function logTodayFinalPnL() {
   const pnl = parseFloat(document.getElementById('quick-pnl').value);
-  if (isNaN(pnl)) return;
+  if (isNaN(pnl)) {
+    alert('Please enter a valid P&L amount');
+    return;
+  }
   
   const today = state.todayDate;
-  state.daysTradedSet.add(today);
-  state.balance += pnl;
   
+  // Initialize today's history if it doesn't exist
+  if (!state.dailyPnLHistory[today]) {
+    state.dailyPnLHistory[today] = {
+      finalPnL: pnl,
+      locked: true,
+      changes: [{
+        timestamp: new Date().toISOString(),
+        oldValue: null,
+        newValue: pnl,
+        reason: 'Initial P&L entry'
+      }]
+    };
+  } else {
+    // This shouldn't happen, but just in case
+    const oldPnL = state.dailyPnLHistory[today].finalPnL;
+    state.dailyPnLHistory[today].finalPnL = pnl;
+    state.dailyPnLHistory[today].locked = true;
+    state.dailyPnLHistory[today].changes.push({
+      timestamp: new Date().toISOString(),
+      oldValue: oldPnL,
+      newValue: pnl,
+      reason: 'P&L updated'
+    });
+  }
+  
+  // Update balance
+  state.balance += pnl;
+  state.daysTradedSet.add(today);
+  state.todayPnLLocked = true;
+  
+  // Add to journal
   state.journal.push({
     date: today,
-    instrument: 'Quick Entry',
+    instrument: 'Daily P&L',
     pnl: pnl,
-    notes: 'Quick log from dashboard',
+    notes: 'Final P&L for the day',
     news: false,
     weekend: false
   });
   
   document.getElementById('quick-pnl').value = '';
   updateUI();
+  updatePnLDisplay();
   renderJournal();
   calculateStats();
   renderCalendar();
+}
+
+function showOverrideConfirm() {
+  const reason = prompt('⚠️ WARNING: Changing locked P&L will be recorded in history.\n\nEnter reason for override:');
+  if (reason && reason.trim()) {
+    unlockTodayPnL(reason);
+  }
+}
+
+function unlockTodayPnL(reason) {
+  const today = state.todayDate;
+  const oldPnL = state.dailyPnLHistory[today]?.finalPnL || 0;
+  
+  const newPnL = parseFloat(prompt(`Current P&L: $${oldPnL.toFixed(2)}\n\nEnter NEW P&L:`));
+  
+  if (isNaN(newPnL)) {
+    alert('Invalid P&L amount. Override cancelled.');
+    return;
+  }
+  
+  if (!confirm(`Change P&L from $${oldPnL.toFixed(2)} to $${newPnL.toFixed(2)}?\n\nThis will be permanently recorded in history.`)) {
+    return;
+  }
+  
+  // Record the change
+  if (!state.dailyPnLHistory[today]) {
+    state.dailyPnLHistory[today] = {
+      finalPnL: newPnL,
+      locked: true,
+      changes: []
+    };
+  }
+  
+  state.dailyPnLHistory[today].changes.push({
+    timestamp: new Date().toISOString(),
+    oldValue: oldPnL,
+    newValue: newPnL,
+    reason: reason
+  });
+  
+  state.dailyPnLHistory[today].finalPnL = newPnL;
+  
+  // Adjust balance
+  const difference = newPnL - oldPnL;
+  state.balance += difference;
+  
+  // Update journal entry
+  const todayJournalIndex = state.journal.findIndex(e => e.date === today && e.instrument === 'Daily P&L');
+  if (todayJournalIndex >= 0) {
+    state.journal[todayJournalIndex].pnl = newPnL;
+    state.journal[todayJournalIndex].notes = `Final P&L (Override: ${reason})`;
+  }
+  
+  updateUI();
+  updatePnLDisplay();
+  renderJournal();
+  calculateStats();
+  renderCalendar();
+  
+  alert('P&L updated and change recorded in history.');
+}
+
+function updatePnLDisplay() {
+  const today = state.todayDate;
+  const todayHistory = state.dailyPnLHistory[today];
+  
+  if (todayHistory && todayHistory.locked) {
+    // P&L is locked - show locked view
+    document.getElementById('today-pnl-input').style.display = 'none';
+    document.getElementById('today-pnl-display').style.display = 'block';
+    document.getElementById('locked-pnl-amount').textContent = 
+      (todayHistory.finalPnL >= 0 ? '+' : '') + '$' + todayHistory.finalPnL.toFixed(2);
+    document.getElementById('locked-pnl-amount').style.color = 
+      todayHistory.finalPnL >= 0 ? '#27ae60' : '#c0392b';
+    
+    // Show history if there are changes
+    if (todayHistory.changes && todayHistory.changes.length > 0) {
+      document.getElementById('today-pnl-history').style.display = 'block';
+      renderPnLHistory(todayHistory.changes);
+    }
+  } else {
+    // P&L not set yet - show input
+    document.getElementById('today-pnl-input').style.display = 'block';
+    document.getElementById('today-pnl-display').style.display = 'none';
+    document.getElementById('today-pnl-history').style.display = 'none';
+  }
+}
+
+function renderPnLHistory(changes) {
+  const listDiv = document.getElementById('pnl-history-list');
+  
+  listDiv.innerHTML = changes.map((change, i) => {
+    const time = new Date(change.timestamp).toLocaleTimeString('en-US', { 
+      hour: '2-digit', 
+      minute: '2-digit',
+      hour12: true 
+    });
+    const oldVal = change.oldValue !== null ? '$' + change.oldValue.toFixed(2) : 'None';
+    const newVal = '$' + change.newValue.toFixed(2);
+    
+    return `
+      <div style="background:#f9f9f9;border-left:3px solid ${i === 0 ? '#27ae60' : '#D4AF37'};padding:0.6rem;margin:0.4rem 0;border-radius:4px;font-size:0.85rem">
+        <div style="display:flex;justify-content:space-between;margin-bottom:0.3rem">
+          <strong>${time}</strong>
+          <span style="color:#666">${change.reason}</span>
+        </div>
+        <div style="color:#666">
+          ${oldVal} → <strong style="color:${change.newValue >= 0 ? '#27ae60' : '#c0392b'}">${newVal}</strong>
+        </div>
+      </div>
+    `;
+  }).reverse().join('');
+}
+
+function logQuickTrade() {
+  // Legacy function - redirect to new function
+  logTodayFinalPnL();
 }
 
 function analyzeYesterday() {
@@ -1657,8 +2391,9 @@ function renderCalendar() {
 function showDayDetails(dateStr) {
   const dayEntries = state.journal.filter(e => e.date === dateStr);
   const detailsDiv = document.getElementById('calendar-details');
+  const dayHistory = state.dailyPnLHistory[dateStr];
 
-  if (dayEntries.length === 0) {
+  if (dayEntries.length === 0 && !dayHistory) {
     detailsDiv.innerHTML = `
       <h4 style="color:#0A1F44;margin:0 0 1rem">${dateStr}</h4>
       <div style="background:#f9f9f9;padding:1.5rem;border-radius:6px;text-align:center">
@@ -1669,7 +2404,7 @@ function showDayDetails(dateStr) {
     return;
   }
 
-  const dayPnL = dayEntries.reduce((sum, e) => sum + e.pnl, 0);
+  const dayPnL = dayHistory?.finalPnL || dayEntries.reduce((sum, e) => sum + e.pnl, 0);
   
   detailsDiv.innerHTML = `
     <h4 style="color:#0A1F44;margin:0 0 1rem">${dateStr}</h4>
@@ -1679,7 +2414,31 @@ function showDayDetails(dateStr) {
         <span style="font-size:1.5rem;font-weight:700;color:${dayPnL >= 0 ? '#27ae60' : '#c0392b'}">${dayPnL >= 0 ? '+' : ''}$${dayPnL.toFixed(2)}</span>
       </div>
       <div style="margin-top:0.3rem;font-size:0.85rem;color:#999">${dayEntries.length} trade${dayEntries.length > 1 ? 's' : ''} executed</div>
+      ${dayHistory && dayHistory.locked ? '<div style="margin-top:0.3rem;font-size:0.8rem;color:#e67e22">🔒 P&L Locked</div>' : ''}
     </div>
+    
+    ${dayHistory && dayHistory.changes && dayHistory.changes.length > 1 ? `
+      <div style="background:#fff4e6;border-left:3px solid #e67e22;padding:0.8rem;border-radius:4px;margin-bottom:1rem">
+        <h5 style="margin:0 0 0.5rem;color:#e67e22;font-size:0.9rem">📝 P&L Change History (${dayHistory.changes.length} changes)</h5>
+        <div style="max-height:150px;overflow-y:auto">
+          ${dayHistory.changes.map((change, i) => {
+            const time = new Date(change.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+            const oldVal = change.oldValue !== null ? '$' + change.oldValue.toFixed(2) : 'None';
+            const newVal = '$' + change.newValue.toFixed(2);
+            return `
+              <div style="background:white;padding:0.5rem;margin:0.3rem 0;border-radius:3px;font-size:0.8rem">
+                <div style="display:flex;justify-content:space-between">
+                  <strong>${time}</strong>
+                  <span style="color:#666">${change.reason}</span>
+                </div>
+                <div style="color:#666;margin-top:0.2rem">${oldVal} → <strong>${newVal}</strong></div>
+              </div>
+            `;
+          }).reverse().join('')}
+        </div>
+      </div>
+    ` : ''}
+    
     ${dayEntries.map((e, i) => `
       <div style="background:white;border:1px solid #e0e0e0;border-left:4px solid ${e.pnl >= 0 ? '#27ae60' : '#c0392b'};border-radius:4px;padding:0.8rem;margin:0.5rem 0">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.3rem">
@@ -1712,9 +2471,190 @@ function changeMonth(direction) {
 document.getElementById('entry-date').value = new Date().toISOString().split('T')[0];
 document.getElementById('withdrawal-date').value = new Date().toISOString().split('T')[0];
 
-loadState();
 setInterval(checkAlerts, 60000);
+
+// Mobile Menu Functions
+function toggleMobileMenu() {
+  const menu = document.getElementById('mobile-menu');
+  const overlay = document.getElementById('mobile-menu-overlay');
+  
+  if (menu.classList.contains('open')) {
+    menu.classList.remove('open');
+    overlay.classList.remove('show');
+  } else {
+    menu.classList.add('open');
+    overlay.classList.add('show');
+  }
+}
+
+function switchTabMobile(tab) {
+  // Switch the tab
+  switchTab(tab);
+  
+  // Update active state in mobile menu
+  document.querySelectorAll('.mobile-menu-item').forEach(item => {
+    item.classList.remove('active');
+  });
+  event.target.classList.add('active');
+  
+  // Close menu
+  toggleMobileMenu();
+}
+
+// Update mobile menu when phase changes
+function updateMobileMenuPhase() {
+  const payoutTab = document.getElementById('mobile-payout-tab');
+  if (state.phase === 'funded') {
+    payoutTab.style.display = 'block';
+  } else {
+    payoutTab.style.display = 'none';
+  }
+}
+
 </script>
+
+<!-- Firebase Module Script - Must be separate -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+import { getFirestore, doc, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC-AXqyWAyBbSsTq8ubmJuZnmegtqmAx4M",
+  authDomain: "rmc-trade-guardian.firebaseapp.com",
+  projectId: "rmc-trade-guardian",
+  storageBucket: "rmc-trade-guardian.firebasestorage.app",
+  messagingSenderId: "874357754762",
+  appId: "1:874357754762:web:283e45be98dfb044e91673"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let currentUser = null;
+
+// Login Handler
+window.handleLogin = async function(event) {
+  event.preventDefault();
+  const email = document.getElementById('login-email').value;
+  const password = document.getElementById('login-password').value;
+  const errorDiv = document.getElementById('login-error');
+  
+  try {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    currentUser = userCredential.user;
+    
+    document.getElementById('login-screen').classList.add('hidden');
+    document.getElementById('app-container').classList.add('show');
+    document.getElementById('current-user-email').textContent = email;
+    document.getElementById('mobile-user-email').textContent = email;
+    
+    await loadUserDataFromFirestore();
+    
+    errorDiv.classList.remove('show');
+  } catch (error) {
+    errorDiv.textContent = 'Invalid email or password. Please try again.';
+    errorDiv.classList.add('show');
+    console.error('Login error:', error);
+  }
+};
+
+// Logout Handler
+window.handleLogout = async function() {
+  if (confirm('Are you sure you want to logout?')) {
+    try {
+      await saveUserDataToFirestore();
+      await signOut(auth);
+      
+      document.getElementById('app-container').classList.remove('show');
+      document.getElementById('login-screen').classList.remove('hidden');
+      document.getElementById('login-form').reset();
+      
+      currentUser = null;
+    } catch (error) {
+      console.error('Logout error:', error);
+      alert('Error logging out. Please try again.');
+    }
+  }
+};
+
+// Load user data from Firestore
+async function loadUserDataFromFirestore() {
+  if (!currentUser) return;
+  
+  try {
+    const docRef = doc(db, 'users', currentUser.uid, 'trading', 'state');
+    const docSnap = await getDoc(docRef);
+    
+    if (docSnap.exists()) {
+      const loaded = docSnap.data();
+      state = { ...state, ...loaded };
+      if (state.daysTradedSet && Array.isArray(state.daysTradedSet)) {
+        state.daysTradedSet = new Set(state.daysTradedSet);
+      }
+      state.todayDate = new Date().toISOString().split('T')[0];
+      state.todayPnL = 0;
+      console.log('Data loaded from Firestore');
+    } else {
+      console.log('No saved data, starting fresh');
+    }
+  } catch (e) {
+    console.log('Error loading data:', e);
+  }
+  
+  updateUI();
+  updateRulesPanel();
+  populateChecklist();
+  renderJournal();
+  calculateStats();
+  checkAlerts();
+  updateHeaderStats();
+  renderCalendar();
+  updateMobileMenuPhase();
+  updatePnLDisplay();
+}
+
+// Save user data to Firestore
+async function saveUserDataToFirestore() {
+  if (!currentUser) return;
+  
+  const toSave = { ...state };
+  toSave.daysTradedSet = Array.from(state.daysTradedSet);
+  
+  try {
+    const docRef = doc(db, 'users', currentUser.uid, 'trading', 'state');
+    await setDoc(docRef, toSave);
+    console.log('Data saved to Firestore');
+  } catch (e) {
+    console.error('Error saving:', e);
+  }
+}
+
+// Override saveState to use Firestore
+window.originalSaveState = window.saveState;
+window.saveState = async function() {
+  await saveUserDataToFirestore();
+};
+
+// Check auth state on page load
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    currentUser = user;
+    document.getElementById('login-screen').classList.add('hidden');
+    document.getElementById('app-container').classList.add('show');
+    document.getElementById('current-user-email').textContent = user.email;
+    document.getElementById('mobile-user-email').textContent = user.email;
+    loadUserDataFromFirestore();
+  } else {
+    document.getElementById('login-screen').classList.remove('hidden');
+    document.getElementById('app-container').classList.remove('show');
+  }
+});
+</script>
+</script>
+
+</div><!-- End app-container -->
 
 </body>
 </html>
